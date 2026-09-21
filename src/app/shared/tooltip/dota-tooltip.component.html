@@ -1,0 +1,31 @@
+<div class="dota-tooltip">
+  <header class="tooltip-header">
+    <div class="item-icon-name">
+      <img [src]="vm.icon" [alt]="vm.name" class="item-icon" />
+      <span class="item-name">{{ vm.name }}</span>
+    </div>
+    <div class="item-cost" *ngIf="vm.cost">
+      <span class="coin-icon">🪙</span> {{ vm.cost }}
+    </div>
+  </header>
+
+  <hr class="divider" *ngIf="vm.attributes.length" />
+
+  <section class="tooltip-attributes" *ngIf="vm.attributes.length">
+    <div *ngFor="let attr of vm.attributes" class="attribute-row">
+      <span class="attr-value">+ {{ attr.value }}</span>
+      <span class="attr-name">{{ attr.label }}</span>
+    </div>
+  </section>
+
+  <hr class="divider" *ngIf="vm.passive" />
+
+  <section class="tooltip-ability" *ngIf="vm.passive">
+    <div class="ability-title">Passive: {{ vm.passive.title }}</div>
+    <div class="ability-description" [innerHTML]="vm.passive.description"></div>
+  </section>
+
+  <hr class="divider" *ngIf="vm.lore" />
+
+  <footer class="tooltip-lore" *ngIf="vm.lore">{{ vm.lore }}</footer>
+</div>

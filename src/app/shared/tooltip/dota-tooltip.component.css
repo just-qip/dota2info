@@ -1,0 +1,39 @@
+.dota-tooltip {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  color: #ddd;
+  width: 340px;
+  font-family: 'Roboto', 'Arial', sans-serif;
+  font-size: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  border-radius: 4px;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #333;
+  border-bottom: 1px solid #444;
+}
+
+.item-icon-name { display: flex; align-items: center; gap: 10px; }
+.item-icon { width: 40px; height: 40px; border-radius: 4px; }
+.item-name { font-weight: 600; color: #f0f0f0; font-size: 16px; }
+.item-cost { display: flex; align-items: center; gap: 4px; color: #f5c542; font-weight: 600; }
+
+.divider { border: none; border-top: 1px solid #444; margin: 0; }
+
+.tooltip-attributes { padding: 10px 14px; }
+.attribute-row { display: flex; gap: 6px; margin-bottom: 3px; }
+.attr-value { color: #8ecae6; font-weight: 600; min-width: 30px; }
+.attr-name { color: #ddd; }
+
+.tooltip-ability { padding: 10px 14px; }
+.ability-title { font-weight: 600; margin-bottom: 6px; color: #f0f0f0; }
+.ability-description { line-height: 1.45; color: #ccc; }
+
+.tooltip-lore { padding: 8px 14px 12px; color: #888; font-style: italic; font-size: 12px; }
