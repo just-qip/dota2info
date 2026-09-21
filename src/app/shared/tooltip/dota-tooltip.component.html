@@ -1,7 +1,13 @@
 <div class="dota-tooltip" *ngIf="vm">
   <header class="tooltip-header">
     <div class="item-icon-name">
-      <img [src]="vm.icon" [alt]="vm.name" class="item-icon" />
+      <img
+        *ngIf="vm.icon"
+        [src]="vm.icon"
+        [alt]="vm.name"
+        class="item-icon"
+        (error)="hideBrokenImage($event)"
+      />
       <div class="title-block">
         <span class="item-name">{{ vm.name }}</span>
         <span class="item-subtitle" *ngIf="vm.subtitle">{{ vm.subtitle }}</span>
@@ -12,7 +18,69 @@
     </div>
   </header>
 
-  <!-- ── Роли (для героев) ── -->
+  <!-- ── Способность: мета-информация ── -->
+  <ng-container *ngIf="vm.kind === 'ability'">
+    <hr class="divider" />
+    <section class="tooltip-stats">
+      <div class="stat-row" *ngIf="vm.abilityBehavior">
+        <span class="stat-icon">🎯</span>
+        <span class="stat-label">Behavior</span>
+        <span class="stat-value">{{ vm.abilityBehavior }}</span>
+      </div>
+      <div class="stat-row" *ngIf="vm.abilityTarget">
+        <span class="stat-icon">👥</span>
+        <span class="stat-label">Target</span>
+        <span class="stat-value">{{ vm.abilityTarget }}</span>
+      </div>
+      <div class="stat-row" *ngIf="vm.abilityDamageType">
+        <span class="stat-icon">💥</span>
+        <span class="stat-label">Damage Type</span>
+        <span class="stat-value">{{ vm.abilityDamageType }}</span>
+      </div>
+
+      <div class="stat-row" *ngIf="showMana(vm.abilityManaCost) || (vm.abilityManaCostLevels && vm.abilityManaCostLevels.length)">
+        <span class="stat-icon">🔷</span>
+        <span class="stat-label">Mana Cost</span>
+        <span class="stat-value">
+          <ng-container *ngIf="vm.abilityManaCostLevels && vm.abilityManaCostLevels.length; else plainMana">
+            <span class="level-chain">
+              <ng-container *ngFor="let lvl of vm.abilityManaCostLevels; let i = index; let last = last">
+                <span class="level-chip">{{ lvl }}</span>
+                <span class="level-arrow" *ngIf="!last">→</span>
+              </ng-container>
+            </span>
+          </ng-container>
+          <ng-template #plainMana>{{ vm.abilityManaCost }}</ng-template>
+        </span>
+      </div>
+
+      <div class="stat-row" *ngIf="showCooldown(vm.abilityCooldown) || (vm.abilityCooldownLevels && vm.abilityCooldownLevels.length)">
+        <span class="stat-icon">⏱</span>
+        <span class="stat-label">Cooldown</span>
+        <span class="stat-value">
+          <ng-container *ngIf="vm.abilityCooldownLevels && vm.abilityCooldownLevels.length; else plainCd">
+            <span class="level-chain">
+              <ng-container *ngFor="let lvl of vm.abilityCooldownLevels; let i = index; let last = last">
+                <span class="level-chip">{{ lvl }}</span>
+                <span class="level-arrow" *ngIf="!last">→</span>
+              </ng-container>
+            </span>
+          </ng-container>
+          <ng-template #plainCd>{{ vm.abilityCooldown }}</ng-template>
+        </span>
+      </div>
+    </section>
+  </ng-container>
+
+  <!-- ── Описание способности ── -->
+  <ng-container *ngIf="vm.abilityDescription">
+    <hr class="divider" />
+    <section class="tooltip-ability">
+      <div class="ability-description" [innerHTML]="vm.abilityDescription"></div>
+    </section>
+  </ng-container>
+
+  <!-- ── Роли ── -->
   <ng-container *ngIf="vm.roles && vm.roles.length">
     <hr class="divider" />
     <section class="tooltip-roles">
@@ -20,7 +88,7 @@
     </section>
   </ng-container>
 
-  <!-- ── Основные статы (для героев) ── -->
+  <!-- ── Статы героя ── -->
   <ng-container *ngIf="vm.stats && vm.stats.length">
     <hr class="divider" />
     <section class="tooltip-stats">
@@ -34,7 +102,7 @@
     </section>
   </ng-container>
 
-  <!-- ── Атрибуты героя STR/AGI/INT ── -->
+  <!-- ── Атрибуты героя ── -->
   <ng-container *ngIf="vm.heroAttrs">
     <hr class="divider" />
     <section class="tooltip-hero-attrs">
@@ -59,14 +127,17 @@
     </section>
   </ng-container>
 
-  <!-- ── Дальность атаки / обзор / скорость ── -->
+  <!-- ── Дальность атаки / скорость / обзор ── -->
   <ng-container *ngIf="vm.attackRange !== undefined">
     <hr class="divider" />
     <section class="tooltip-stats">
       <div class="stat-row">
         <span class="stat-icon">🎯</span>
         <span class="stat-label">Attack Range</span>
-        <span class="stat-value">{{ vm.attackRange }} <span class="stat-suffix">({{ vm.attackType }})</span></span>
+        <span class="stat-value">
+          {{ vm.attackRange }}
+          <span class="stat-suffix">({{ vm.attackType }})</span>
+        </span>
       </div>
       <div class="stat-row" *ngIf="vm.moveSpeed !== undefined">
         <span class="stat-icon">👟</span>
@@ -81,18 +152,59 @@
     </section>
   </ng-container>
 
-  <!-- ── Обычные атрибуты предметов ── -->
-  <ng-container *ngIf="vm.attributes.length">
+  <!-- ── Способности героя ── -->
+  <ng-container *ngIf="vm.heroAbilities && vm.heroAbilities.length">
     <hr class="divider" />
-    <section class="tooltip-attributes">
-      <div *ngFor="let attr of vm.attributes" class="attribute-row">
-        <span class="attr-value">+ {{ attr.value }}</span>
-        <span class="attr-name">{{ attr.label }}</span>
+    <section class="tooltip-hero-abilities">
+      <div class="hero-ability" *ngFor="let ab of vm.heroAbilities">
+        <img
+          *ngIf="ab.icon"
+          [src]="ab.icon"
+          [alt]="ab.name"
+          class="hero-ability-icon"
+          (error)="hideBrokenImage($event)"
+        />
+        <div class="hero-ability-body">
+          <div class="hero-ability-title">
+            {{ ab.name }}
+            <span class="hero-ability-ult" *ngIf="ab.isUltimate">ULT</span>
+          </div>
+          <div class="hero-ability-meta">
+            <span class="meta-badge" *ngIf="showMana(ab.manaCost)">🔷 {{ ab.manaCost }}</span>
+            <span class="meta-badge" *ngIf="showCooldown(ab.cooldown)">⏱ {{ ab.cooldown }}</span>
+            <span class="meta-badge subtle" *ngIf="ab.behavior">{{ ab.behavior }}</span>
+          </div>
+          <div class="hero-ability-desc" *ngIf="ab.description" [innerHTML]="ab.description"></div>
+        </div>
       </div>
     </section>
   </ng-container>
 
-  <!-- ── Пассивка предмета ── -->
+  <!-- ── Атрибуты предметов / способностей ── -->
+  <ng-container *ngIf="vm.attributes.length">
+    <hr class="divider" />
+    <section class="tooltip-attributes">
+      <div *ngFor="let attr of vm.attributes" class="attribute-row">
+        <span class="attr-name">{{ attr.label }}</span>
+
+        <!-- Уровневые значения со стрелками -->
+        <span class="attr-value" *ngIf="attr.levels && attr.levels.length; else plainValue">
+          <span class="level-chain">
+            <ng-container *ngFor="let lvl of attr.levels; let i = index; let last = last">
+              <span class="level-chip">{{ lvl }}</span>
+              <span class="level-arrow" *ngIf="!last">→</span>
+            </ng-container>
+          </span>
+        </span>
+
+        <ng-template #plainValue>
+          <span class="attr-value">{{ attr.value }}</span>
+        </ng-template>
+      </div>
+    </section>
+  </ng-container>
+
+  <!-- ── Пассивка ── -->
   <ng-container *ngIf="vm.passive">
     <hr class="divider" />
     <section class="tooltip-ability">

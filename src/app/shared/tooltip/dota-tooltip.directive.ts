@@ -48,6 +48,7 @@ export class DotaTooltipDirective {
           { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top', offsetX: -8 },
         ])
         .withFlexibleDimensions(false)
+        .withViewportMargin(12)
         .withPush(true);
 
       this.overlayRef = this.overlay.create({
@@ -93,6 +94,7 @@ export class DotaTooltipDirective {
 
   private toCdnUrl(path?: string): string {
     if (!path) return '';
-    return path.startsWith('http') ? path : `${CDN}${path}`;
+    const clean = path.replace(/\?+$/, '');
+    return clean.startsWith('http') ? clean : `${CDN}${clean}`;
   }
 }

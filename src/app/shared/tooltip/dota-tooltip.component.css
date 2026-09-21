@@ -2,19 +2,27 @@
   background-color: #2a2a2a;
   border: 1px solid #444;
   color: #ddd;
-  width: 360px;
+
+  /* Тултип растёт под содержимое, но никогда не выходит за экран */
+  width: max-content;
+  min-width: 320px;
+  max-width: min(560px, calc(100vw - 24px));
+
+  max-height: calc(100vh - 24px);
+  overflow: hidden;
+
   font-family: 'Roboto', 'Arial', sans-serif;
   font-size: 14px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
   border-radius: 4px;
   pointer-events: none;
-  overflow: hidden;
 }
 
 .tooltip-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
   padding: 12px;
   background: #333;
   border-bottom: 1px solid #444;
@@ -47,15 +55,16 @@
   font-weight: 600;
   color: #f0f0f0;
   font-size: 16px;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .item-subtitle {
   font-size: 12px;
   color: #999;
   margin-top: 2px;
+  white-space: nowrap;
 }
 
 .item-cost {
@@ -73,12 +82,11 @@
   margin: 0;
 }
 
-/* ── Роли ────────────────────────────── */
 .tooltip-roles {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  padding: 8px 14px;
+  padding: 8px 12px;
 }
 
 .role-chip {
@@ -90,35 +98,36 @@
   font-weight: 500;
 }
 
-/* ── Статы (HP, мана, броня, урон...) ── */
 .tooltip-stats {
-  padding: 8px 14px;
+  padding: 6px 12px;
 }
 
 .stat-row {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 3px 0;
-  font-size: 13px;
+  padding: 2px 0;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 .stat-icon {
-  width: 18px;
+  width: 16px;
   text-align: center;
-  font-size: 13px;
+  font-size: 12px;
   flex-shrink: 0;
 }
 
 .stat-label {
   color: #aaa;
-  flex: 1;
+  flex-shrink: 0;
 }
 
 .stat-value {
   color: #f0f0f0;
   font-weight: 600;
   white-space: nowrap;
+  margin-left: auto;
 }
 
 .stat-suffix {
@@ -127,25 +136,25 @@
   font-size: 11px;
 }
 
-/* ── Атрибуты героя STR/AGI/INT ──────── */
 .tooltip-hero-attrs {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 8px 14px;
+  gap: 3px;
+  padding: 6px 12px;
 }
 
 .attr-block {
   display: grid;
-  grid-template-columns: 20px 1fr auto auto;
+  grid-template-columns: 18px 1fr auto auto;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 .attr-icon {
   text-align: center;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .attr-label {
@@ -155,7 +164,7 @@
 .attr-num {
   color: #f0f0f0;
   font-weight: 700;
-  min-width: 24px;
+  min-width: 22px;
   text-align: right;
 }
 
@@ -163,53 +172,165 @@
   color: #6cbf5a;
   font-size: 11px;
   font-weight: 600;
-  min-width: 32px;
+  min-width: 30px;
   text-align: right;
 }
 
-/* ── Атрибуты предметов ──────────────── */
+.tooltip-hero-abilities {
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hero-ability {
+  display: flex;
+  gap: 10px;
+}
+
+.hero-ability-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: #222;
+  object-fit: cover;
+}
+
+.hero-ability-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.hero-ability-title {
+  font-weight: 600;
+  color: #f0f0f0;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-ability-ult {
+  background: #f5c542;
+  color: #1b1b1b;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+.hero-ability-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 2px 0 3px;
+  font-size: 10px;
+  color: #aaa;
+}
+
+.meta-badge {
+  background: #3a3a3a;
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: #ddd;
+  font-weight: 500;
+}
+
+.meta-badge.subtle {
+  background: transparent;
+  color: #888;
+  font-weight: 400;
+  padding: 1px 0;
+}
+
+.hero-ability-desc {
+  font-size: 11px;
+  line-height: 1.4;
+  color: #bbb;
+}
+
+/* ── Атрибуты предметов / способностей ──────── */
 .tooltip-attributes {
-  padding: 10px 14px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .attribute-row {
   display: flex;
-  gap: 6px;
-  margin-bottom: 3px;
-  font-size: 13px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.attr-name {
+  color: #aaa;
+  flex-shrink: 0;
 }
 
 .attr-value {
   color: #8ecae6;
   font-weight: 600;
-  min-width: 30px;
+  text-align: right;
+  margin-left: auto;
+  white-space: nowrap;
 }
 
-.attr-name {
-  color: #ddd;
+/* Цепочка уровней: 70 → 110 → 150 → 190 → ... */
+.level-chain {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
 }
 
-/* ── Пассивка ────────────────────────── */
+.level-chip {
+  display: inline-block;
+  background: #1f2b38;
+  color: #8ecae6;
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 1.35;
+  padding: 0 5px;
+  border-radius: 3px;
+  border: 1px solid #2c3e50;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.level-arrow {
+  color: #5a6a80;
+  font-size: 10px;
+  font-weight: 400;
+  user-select: none;
+  flex-shrink: 0;
+}
+
 .tooltip-ability {
-  padding: 10px 14px;
+  padding: 8px 12px;
 }
 
 .ability-title {
   font-weight: 600;
   margin-bottom: 6px;
   color: #f0f0f0;
-}
-
-.ability-description {
-  line-height: 1.45;
-  color: #ccc;
   font-size: 13px;
 }
 
-/* ── Лор ─────────────────────────────── */
+.ability-description {
+  line-height: 1.4;
+  color: #ccc;
+  font-size: 12px;
+}
+
 .tooltip-lore {
-  padding: 8px 14px 12px;
+  padding: 8px 12px 10px;
   color: #888;
   font-style: italic;
-  font-size: 12px;
+  font-size: 11px;
 }

@@ -1,7 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { map, shareReplay, tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 // ── Items ────────────────────────────────────────────────
 export interface DotaItemAttrib {
@@ -55,7 +56,6 @@ export interface DotaHero {
   img: string;
   icon: string;
 
-  // Основные статы
   base_health?: number;
   base_health_regen?: number;
   base_mana?: number;
@@ -63,7 +63,6 @@ export interface DotaHero {
   base_armor?: number;
   base_mr?: number;
 
-  // Урон и атрибуты
   base_attack_min?: number;
   base_attack_max?: number;
   base_str?: number;
@@ -73,22 +72,18 @@ export interface DotaHero {
   agi_gain?: number;
   int_gain?: number;
 
-  // Атака
   attack_range?: number;
   projectile_speed?: number;
   attack_rate?: number;
   base_attack_time?: number;
   attack_point?: number;
 
-  // Движение
   move_speed?: number;
   turn_rate?: number | null;
 
-  // Обзор
   day_vision?: number;
   night_vision?: number;
 
-  // Прочее
   legs?: number;
   cm_enabled?: boolean;
 }
@@ -96,6 +91,41 @@ export interface DotaHero {
 export interface DotaHeroEntry {
   id: string;
   hero: DotaHero;
+}
+
+// ── Abilities ────────────────────────────────────────────
+export interface DotaAbilityAttrib {
+  key: string;
+  header?: string;
+  value: string | number | boolean;
+  display?: string;
+}
+
+export interface DotaAbility {
+  dname?: string;
+  desc?: string;
+  behavior?: string | string[];
+  dmg_type?: string;
+  bkbpierce?: string;
+  target_team?: string | string[];
+  target_type?: string | string[];
+  mc?: number | false | string;
+  cd?: number | false | string;
+  attrib?: DotaAbilityAttrib[];
+  img?: string;
+  is_innate?: boolean;
+  is_granted_by_shard?: boolean;
+  is_granted_by_scepter?: boolean;
+}
+
+export interface DotaAbilityEntry {
+  id: string;
+  ability: DotaAbility;
+}
+
+export interface HeroAbilitySet {
+  abilities: string[];
+  talents?: { name: string; level: number }[];
 }
 
 // ── Общие ────────────────────────────────────────────────
@@ -125,18 +155,22 @@ const HIDDEN_ITEM_PREFIXES = [
 @Injectable({ providedIn: 'root' })
 export class DotaDataService {
   private http = inject(HttpClient);
+  private readonly base = environment.dataBase;
 
   private items$?: Observable<Record<string, DotaItem>>;
   private heroes$?: Observable<Record<string, DotaHero>>;
+  private abilities$?: Observable<Record<string, DotaAbility>>;
+  private heroAbilities$?: Observable<Record<string, HeroAbilitySet>>;
 
   private itemCache = new Map<string, DotaItem>();
   private heroCache = new Map<string, DotaHero>();
+  private abilityCache = new Map<string, DotaAbility>();
 
   // ── Items ──────────────────────────────────────────────
   private loadItems(): Observable<Record<string, DotaItem>> {
     if (!this.items$) {
       this.items$ = this.http
-        .get<Record<string, DotaItem>>('/assets/data/items.json')
+        .get<Record<string, DotaItem>>(`${this.base}/items.json`)
         .pipe(shareReplay(1));
     }
     return this.items$;
@@ -169,7 +203,7 @@ export class DotaDataService {
   private loadHeroes(): Observable<Record<string, DotaHero>> {
     if (!this.heroes$) {
       this.heroes$ = this.http
-        .get<Record<string, DotaHero>>('/assets/data/heroes.json')
+        .get<Record<string, DotaHero>>(`${this.base}/heroes.json`)
         .pipe(shareReplay(1));
     }
     return this.heroes$;
@@ -196,6 +230,53 @@ export class DotaDataService {
     );
   }
 
+  // ── Abilities ──────────────────────────────────────────
+  private loadAbilities(): Observable<Record<string, DotaAbility>> {
+    if (!this.abilities$) {
+      this.abilities$ = this.http
+        .get<Record<string, DotaAbility>>(`${this.base}/abilities.json`)
+        .pipe(shareReplay(1));
+    }
+    return this.abilities$;
+  }
+
+  private loadHeroAbilities(): Observable<Record<string, HeroAbilitySet>> {
+    if (!this.heroAbilities$) {
+      this.heroAbilities$ = this.http
+        .get<Record<string, HeroAbilitySet>>(`${this.base}/hero_abilities.json`)
+        .pipe(shareReplay(1));
+    }
+    return this.heroAbilities$;
+  }
+
+  getAbility$(abilityId: string): Observable<DotaAbility | null> {
+    return this.loadAbilities().pipe(map((a) => a[abilityId] ?? null));
+  }
+
+  getAllAbilities$(): Observable<DotaAbilityEntry[]> {
+    return this.loadAbilities().pipe(
+      map((abilities) =>
+        Object.entries(abilities)
+          .filter(([key, a]) => this.isAbilityDisplayable(key, a))
+          .map(([id, ability]) => ({ id, ability }))
+          .sort((a, b) =>
+            (a.ability.dname ?? a.id)
+              .toLowerCase()
+              .localeCompare((b.ability.dname ?? b.id).toLowerCase()),
+          ),
+      ),
+    );
+  }
+
+  getHeroAbilities$(heroId: string): Observable<DotaAbilityEntry[]> {
+    return combineLatest([this.loadHeroAbilities(), this.loadAbilities()]).pipe(
+      map(([heroAbilities, abilities]) => {
+        const keys = heroAbilities[heroId]?.abilities ?? [];
+        return keys.map((id) => ({ id, ability: abilities[id] })).filter((e) => !!e.ability?.dname);
+      }),
+    );
+  }
+
   // ── Общее ──────────────────────────────────────────────
   preload(): Observable<void> {
     return this.loadItems().pipe(
@@ -219,7 +300,17 @@ export class DotaDataService {
     );
   }
 
-  /** Утилита группировки по первой букве, общая для items и heroes */
+  preloadAbilities(): Observable<void> {
+    return this.loadAbilities().pipe(
+      tap((abilities) => {
+        for (const [id, ability] of Object.entries(abilities)) {
+          this.abilityCache.set(id, ability);
+        }
+      }),
+      map(() => void 0),
+    );
+  }
+
   groupByLetter<T>(entries: T[], getLabel: (e: T) => string): LetterGroup<T>[] {
     const map = new Map<string, T[]>();
 
@@ -245,6 +336,13 @@ export class DotaDataService {
     if (!item.dname) return false;
     if (HIDDEN_ITEM_PREFIXES.some((p) => key.startsWith(p))) return false;
     if (item.qual === 'component' && item.cost === null) return false;
+    return true;
+  }
+
+  private isAbilityDisplayable(key: string, ability: DotaAbility): boolean {
+    if (!ability.dname) return false;
+    if (key.startsWith('special_bonus_')) return false;
+    if (key.startsWith('_')) return false;
     return true;
   }
 }

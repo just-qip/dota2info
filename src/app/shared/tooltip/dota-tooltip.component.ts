@@ -12,4 +12,17 @@ import { TooltipViewModel } from './dota-tooltip.types';
 })
 export class DotaTooltipComponent {
   @Input({ required: true }) vm!: TooltipViewModel;
+
+  showMana(v?: number | false | string | null): boolean {
+    return v !== undefined && v !== null && v !== false && v !== 0 && v !== '';
+  }
+
+  showCooldown(v?: number | false | string | null): boolean {
+    return v !== undefined && v !== null && v !== false && v !== 0 && v !== '';
+  }
+
+  hideBrokenImage(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.visibility = 'hidden';
+  }
 }

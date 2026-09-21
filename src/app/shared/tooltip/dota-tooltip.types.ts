@@ -2,6 +2,8 @@ export interface TooltipAttribute {
   label: string;
   value: string | number;
   color?: string;
+  /** Если есть — рендерим значения по уровням со стрелками */
+  levels?: string[];
 }
 
 export interface TooltipAbility {
@@ -9,13 +11,21 @@ export interface TooltipAbility {
   description: string;
 }
 
-/** Строка статистики для героев: иконка-эмодзи + подпись + значение */
 export interface TooltipStat {
   icon: string;
   label: string;
   value: string | number;
-  /** Дополнительный текст, например " (25%)" */
   suffix?: string;
+}
+
+export interface HeroTooltipAbility {
+  name: string;
+  icon: string;
+  cooldown?: number | false | string;
+  manaCost?: number | false | string;
+  description?: string;
+  behavior?: string;
+  isUltimate?: boolean;
 }
 
 export interface TooltipViewModel {
@@ -26,29 +36,34 @@ export interface TooltipViewModel {
   passive?: TooltipAbility;
   lore?: string;
 
-  // ── для героев ──
   subtitle?: string;
   roles?: string[];
-  kind?: 'item' | 'hero';
+  kind?: 'item' | 'hero' | 'ability';
 
-  /** Основные статы героя (HP, мана, броня, урон, скорость) */
   stats?: TooltipStat[];
-
-  /** Атрибуты героя: STR / AGI / INT с приростом */
   heroAttrs?: {
     str: { base: number; gain: number };
     agi: { base: number; gain: number };
     int: { base: number; gain: number };
   };
 
-  /** Дальность атаки + тип */
   attackRange?: number;
   attackType?: 'Melee' | 'Ranged';
-
-  /** Обзор: день / ночь */
   vision?: { day: number; night: number };
-
-  /** Скорость передвижения и поворота */
   moveSpeed?: number;
   turnRate?: number | null;
+
+  heroAbilities?: HeroTooltipAbility[];
+
+  abilityDescription?: string;
+  abilityBehavior?: string;
+  abilityDamageType?: string;
+  abilityManaCost?: number | false | string;
+  abilityCooldown?: number | false | string;
+  abilityTarget?: string;
+  abilityNotes?: string;
+
+  /** Уровневые значения маны и кулдауна (если есть) */
+  abilityManaCostLevels?: string[];
+  abilityCooldownLevels?: string[];
 }

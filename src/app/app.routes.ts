@@ -12,5 +12,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/heroes/heroes-page.component').then((m) => m.HeroesPageComponent),
   },
+  {
+    path: 'abilities',
+    loadComponent: () =>
+      import('./features/abilities/abilities-page.component').then((m) => m.AbilitiesPageComponent),
+  },
   { path: '**', redirectTo: 'items' },
 ];

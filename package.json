@@ -4,9 +4,12 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "npm run build:app && npm run build:elements",
+    "build:app": "ng build dota2info --configuration production",
+    "build:elements": "ng build dota2info-elements --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "serve:ssr": "node dist/dota2info/server/server.mjs"
   },
   "private": true,
   "packageManager": "npm@10.8.2",

@@ -1,9 +1,9 @@
 import { Directive, ElementRef, HostListener, Input, ComponentRef, inject } from '@angular/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { DotaDataService, DotaHero } from '../../core/services/dota-data.service';
+import { DotaAbility, DotaDataService, DotaHero } from '../../core/services/dota-data.service';
 import { DotaTooltipComponent } from './dota-tooltip.component';
-import { TooltipStat, TooltipViewModel } from './dota-tooltip.types';
+import { HeroTooltipAbility, TooltipStat, TooltipViewModel } from './dota-tooltip.types';
 
 const CDN = 'https://cdn.cloudflare.steamstatic.com';
 
@@ -35,24 +35,33 @@ export class HeroTooltipDirective {
     this.dataService.getHero$(this.heroId).subscribe((hero) => {
       if (!hero) return;
 
-      const positionStrategy = this.overlay
-        .position()
-        .flexibleConnectedTo(this.host)
-        .withPositions([
-          { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top', offsetX: 8 },
-          { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top', offsetX: -8 },
-        ])
-        .withFlexibleDimensions(false)
-        .withPush(true);
+      this.dataService.getHeroAbilities$(this.heroId).subscribe((abilities) => {
+        const positionStrategy = this.overlay
+          .position()
+          .flexibleConnectedTo(this.host)
+          .withPositions([
+            { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top', offsetX: 8 },
+            { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top', offsetX: -8 },
+          ])
+          .withFlexibleDimensions(false)
+          .withViewportMargin(12)
+          .withPush(true);
 
-      this.overlayRef = this.overlay.create({
-        positionStrategy,
-        scrollStrategy: this.overlay.scrollStrategies.reposition(),
+        this.overlayRef = this.overlay.create({
+          positionStrategy,
+          scrollStrategy: this.overlay.scrollStrategies.reposition(),
+        });
+
+        const portal = new ComponentPortal(DotaTooltipComponent);
+        this.componentRef = this.overlayRef.attach(portal);
+        this.componentRef.setInput(
+          'vm',
+          this.mapHeroToViewModel(
+            hero,
+            abilities.map((e) => e.ability),
+          ),
+        );
       });
-
-      const portal = new ComponentPortal(DotaTooltipComponent);
-      this.componentRef = this.overlayRef.attach(portal);
-      this.componentRef.setInput('vm', this.mapHeroToViewModel(hero));
     });
   }
 
@@ -63,10 +72,9 @@ export class HeroTooltipDirective {
     this.componentRef = null;
   }
 
-  private mapHeroToViewModel(hero: DotaHero): TooltipViewModel {
+  private mapHeroToViewModel(hero: DotaHero, abilities: DotaAbility[]): TooltipViewModel {
     const attr = ATTR_LABELS[hero.primary_attr] ?? hero.primary_attr;
 
-    // Основные статы в виде строк
     const stats: TooltipStat[] = [
       {
         icon: '❤',
@@ -80,11 +88,7 @@ export class HeroTooltipDirective {
         value: hero.base_mana ?? '—',
         suffix: hero.base_mana_regen !== undefined ? ` (+${hero.base_mana_regen})` : '',
       },
-      {
-        icon: '🛡',
-        label: 'Armor',
-        value: hero.base_armor ?? '—',
-      },
+      { icon: '🛡', label: 'Armor', value: hero.base_armor ?? '—' },
       {
         icon: '✨',
         label: 'Magic Resist',
@@ -97,6 +101,16 @@ export class HeroTooltipDirective {
       },
     ];
 
+    const heroAbilities: HeroTooltipAbility[] = abilities.map((ab, i) => ({
+      name: ab.dname ?? 'Unknown',
+      icon: this.toCdnUrl(ab.img),
+      cooldown: ab.cd,
+      manaCost: ab.mc,
+      description: this.stripHtml(ab.desc),
+      behavior: this.behaviorLabel(ab.behavior),
+      isUltimate: i === abilities.length - 1 && abilities.length >= 4,
+    }));
+
     return {
       name: hero.localized_name,
       subtitle: `${attr} · ${hero.attack_type}`,
@@ -106,13 +120,11 @@ export class HeroTooltipDirective {
       kind: 'hero',
 
       stats,
-
       heroAttrs: {
         str: { base: hero.base_str ?? 0, gain: hero.str_gain ?? 0 },
         agi: { base: hero.base_agi ?? 0, gain: hero.agi_gain ?? 0 },
         int: { base: hero.base_int ?? 0, gain: hero.int_gain ?? 0 },
       },
-
       attackRange: hero.attack_range,
       attackType: hero.attack_type,
       moveSpeed: hero.move_speed,
@@ -121,7 +133,24 @@ export class HeroTooltipDirective {
         day: hero.day_vision ?? 0,
         night: hero.night_vision ?? 0,
       },
+
+      heroAbilities,
     };
+  }
+
+  private behaviorLabel(behavior: DotaAbility['behavior']): string {
+    if (!behavior) return '';
+    if (Array.isArray(behavior)) return behavior.join(', ');
+    return behavior;
+  }
+
+  private stripHtml(html?: string): string {
+    if (!html) return '';
+    return html
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/<[^>]+>/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 
   private toCdnUrl(path?: string): string {
