@@ -44,19 +44,27 @@ h1 {
   padding: 4px 10px;
   font-size: 13px;
   font-weight: 600;
+  font-family: inherit;
   color: #ccc;
-  text-decoration: none;
   background: #2a2a2a;
+  border: 1px solid transparent;
   border-radius: 4px;
-  transition: background 0.15s, color 0.15s;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
 .letter-link:hover {
-  background: #f5c542;
-  color: #1b1b1b;
+  background: #3a3a3a;
+  color: #fff;
 }
 
-/* ── Группы ──────────────────────────────── */
+.letter-link.active {
+  background: #f5c542;
+  color: #1b1b1b;
+  border-color: #f5c542;
+}
+
+/* ── Группы по буквам ────────────────────── */
 .groups {
   display: flex;
   flex-direction: column;

@@ -15,6 +15,7 @@ export class ItemsPageComponent implements OnInit {
 
   items = signal<DotaItemEntry[]>([]);
   loading = signal(true);
+  activeLetter = signal<string | null>(null);
 
   groups = computed<LetterGroup<DotaItemEntry>[]>(() =>
     this.data.groupByLetter(this.items(), (e) => e.item.dname ?? e.id),
@@ -39,5 +40,17 @@ export class ItemsPageComponent implements OnInit {
 
   trackById(_: number, entry: DotaItemEntry): string {
     return entry.id;
+  }
+
+  /** Программный скролл к секции буквы — работает независимо от <base href> */
+  scrollToLetter(letter: string): void {
+    const el = document.getElementById(`item-letter-${letter}`);
+    if (!el) return;
+
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    this.activeLetter.set(letter);
+
+    // Сбросить подсветку через 1.2 сек
+    window.setTimeout(() => this.activeLetter.set(null), 1200);
   }
 }

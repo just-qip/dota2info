@@ -15,6 +15,7 @@ export class HeroesPageComponent implements OnInit {
 
   heroes = signal<DotaHeroEntry[]>([]);
   loading = signal(true);
+  activeLetter = signal<string | null>(null);
 
   groups = computed<LetterGroup<DotaHeroEntry>[]>(() =>
     this.data.groupByLetter(this.heroes(), (e) => e.hero.localized_name),
@@ -39,5 +40,15 @@ export class HeroesPageComponent implements OnInit {
 
   trackById(_: number, entry: DotaHeroEntry): string {
     return entry.id;
+  }
+
+  scrollToLetter(letter: string): void {
+    const el = document.getElementById(`hero-letter-${letter}`);
+    if (!el) return;
+
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    this.activeLetter.set(letter);
+
+    window.setTimeout(() => this.activeLetter.set(null), 1200);
   }
 }

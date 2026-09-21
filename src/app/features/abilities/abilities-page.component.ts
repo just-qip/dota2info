@@ -19,6 +19,7 @@ export class AbilitiesPageComponent implements OnInit {
 
   abilities = signal<DotaAbilityEntry[]>([]);
   loading = signal(true);
+  activeLetter = signal<string | null>(null);
 
   groups = computed<LetterGroup<DotaAbilityEntry>[]>(() =>
     this.data.groupByLetter(this.abilities(), (e) => e.ability.dname ?? e.id),
@@ -43,5 +44,15 @@ export class AbilitiesPageComponent implements OnInit {
 
   trackById(_: number, entry: DotaAbilityEntry): string {
     return entry.id;
+  }
+
+  scrollToLetter(letter: string): void {
+    const el = document.getElementById(`ability-letter-${letter}`);
+    if (!el) return;
+
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    this.activeLetter.set(letter);
+
+    window.setTimeout(() => this.activeLetter.set(null), 1200);
   }
 }

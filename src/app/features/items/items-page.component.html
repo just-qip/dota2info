@@ -6,13 +6,15 @@
     </h1>
 
     <nav class="alphabet-nav" *ngIf="!loading()">
-      <a
+      <button
+        type="button"
         *ngFor="let group of groups(); trackBy: trackByLetter"
-        [href]="'#item-letter-' + group.letter"
         class="letter-link"
+        [class.active]="activeLetter() === group.letter"
+        (click)="scrollToLetter(group.letter)"
       >
         {{ group.letter }}
-      </a>
+      </button>
     </nav>
   </header>
 
