@@ -2,6 +2,14 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.24.
 
+```asciidoc
+<!-- На любом сайте -->
+<script src="https://ваш-сайт.com/elements/main.js" type="module"></script>
+
+<dota-item-icon item-id="skadi"></dota-item-icon>
+<dota-item-icon item-id="blink"></dota-item-icon>
+```
+
 ## Development server
 
 To start a local development server, run:
