@@ -268,10 +268,25 @@ export class DotaDataService {
     );
   }
 
+  /**
+   * Способности героя.
+   *
+   * heroId — это ключ из heroes.json, то есть "1", "2", ...
+   * А hero_abilities.json использует внутренние имена "npc_dota_hero_antimage".
+   * Поэтому сначала мапим ключ героя на его name, потом смотрим способности.
+   */
   getHeroAbilities$(heroId: string): Observable<DotaAbilityEntry[]> {
-    return combineLatest([this.loadHeroAbilities(), this.loadAbilities()]).pipe(
-      map(([heroAbilities, abilities]) => {
-        const keys = heroAbilities[heroId]?.abilities ?? [];
+    return combineLatest([this.loadHeroes(), this.loadHeroAbilities(), this.loadAbilities()]).pipe(
+      map(([heroes, heroAbilities, abilities]) => {
+        const hero = heroes[heroId];
+        const heroName = hero?.name;
+
+        // Пробуем сначала по внутреннему имени, потом по самому ключу
+        const keys =
+          (heroName && heroAbilities[heroName]?.abilities) ||
+          heroAbilities[heroId]?.abilities ||
+          [];
+
         return keys.map((id) => ({ id, ability: abilities[id] })).filter((e) => !!e.ability?.dname);
       }),
     );

@@ -2,7 +2,7 @@
   <header class="tooltip-header">
     <div class="item-icon-name">
       <img
-        *ngIf="vm.icon"
+        *ngIf="canShowIcon(vm.icon)"
         [src]="vm.icon"
         [alt]="vm.name"
         class="item-icon"
@@ -152,29 +152,25 @@
     </section>
   </ng-container>
 
-  <!-- ── Способности героя ── -->
+  <!-- ── Иконки способностей героя ── -->
   <ng-container *ngIf="vm.heroAbilities && vm.heroAbilities.length">
     <hr class="divider" />
-    <section class="tooltip-hero-abilities">
-      <div class="hero-ability" *ngFor="let ab of vm.heroAbilities">
+    <section class="tooltip-abilities-row">
+      <div class="ability-row-item" *ngFor="let ab of vm.heroAbilities">
         <img
-          *ngIf="ab.icon"
+          *ngIf="canShowIcon(ab.icon)"
           [src]="ab.icon"
           [alt]="ab.name"
-          class="hero-ability-icon"
-          (error)="hideBrokenImage($event)"
+          [title]="ab.name"
+          class="ability-row-icon"
+          (error)="onIconError(ab.icon)"
         />
-        <div class="hero-ability-body">
-          <div class="hero-ability-title">
-            {{ ab.name }}
-            <span class="hero-ability-ult" *ngIf="ab.isUltimate">ULT</span>
-          </div>
-          <div class="hero-ability-meta">
-            <span class="meta-badge" *ngIf="showMana(ab.manaCost)">🔷 {{ ab.manaCost }}</span>
-            <span class="meta-badge" *ngIf="showCooldown(ab.cooldown)">⏱ {{ ab.cooldown }}</span>
-            <span class="meta-badge subtle" *ngIf="ab.behavior">{{ ab.behavior }}</span>
-          </div>
-          <div class="hero-ability-desc" *ngIf="ab.description" [innerHTML]="ab.description"></div>
+        <div
+          *ngIf="!canShowIcon(ab.icon)"
+          class="ability-row-icon ability-row-placeholder"
+          [title]="ab.name"
+        >
+          {{ ab.name.charAt(0) }}
         </div>
       </div>
     </section>
@@ -187,7 +183,6 @@
       <div *ngFor="let attr of vm.attributes" class="attribute-row">
         <span class="attr-name">{{ attr.label }}</span>
 
-        <!-- Уровневые значения со стрелками -->
         <span class="attr-value" *ngIf="attr.levels && attr.levels.length; else plainValue">
           <span class="level-chain">
             <ng-container *ngFor="let lvl of attr.levels; let i = index; let last = last">

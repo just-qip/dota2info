@@ -1,5 +1,6 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
 import { AbilityTooltipDirective } from '../../../shared/tooltip';
+import { BrokenIconsService } from '../../../core/services/broken-icons.service';
 
 const CDN = 'https://cdn.cloudflare.steamstatic.com';
 
@@ -18,6 +19,7 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
             width="56"
             height="56"
             decoding="async"
+            referrerpolicy="no-referrer"
             (error)="onImgError()"
           />
         } @else {
@@ -86,10 +88,12 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AbilityIconComponent {
+export class AbilityIconComponent implements OnInit {
   @Input({ required: true }) abilityId!: string;
   @Input() displayName = '';
   @Input() imgPath = '';
+
+  private broken = inject(BrokenIconsService);
 
   showImage = true;
 
@@ -105,7 +109,15 @@ export class AbilityIconComponent {
     return name.charAt(0).toUpperCase();
   }
 
+  ngOnInit(): void {
+    // Если URL уже помечен как битый — не пытаемся его запросить
+    if (this.broken.isBroken(this.iconUrl)) {
+      this.showImage = false;
+    }
+  }
+
   onImgError(): void {
     this.showImage = false;
+    this.broken.markBroken(this.iconUrl);
   }
 }
