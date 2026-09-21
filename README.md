@@ -4,10 +4,16 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ```asciidoc
 <!-- На любом сайте -->
-<script src="https://ваш-сайт.com/elements/main.js" type="module"></script>
+<script src="https://dota2info.com/widget/elements.js" type="module"></script>
 
-<dota-item-icon item-id="skadi"></dota-item-icon>
-<dota-item-icon item-id="blink"></dota-item-icon>
+<dota-item-icon item-id="tango" display-name="Tango"></dota-item-icon>
+
+<dota-hero-icon hero-id="antimage" display-name="Anti-Mage"></dota-hero-icon>
+
+<dota-ability-icon
+ability-id="antimage_mana_break"
+display-name="Mana Break"
+></dota-ability-icon>
 ```
 
 ## Development server
