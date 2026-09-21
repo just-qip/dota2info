@@ -1,8 +1,24 @@
-<main class="app-container">
-  <h1>Dota 2 Items</h1>
-  <div class="items-grid">
-    <app-item-icon itemId="skadi" />
-    <app-item-icon itemId="blink" />
-    <app-item-icon itemId="black_king_bar" />
-  </div>
+<header class="topbar">
+  <div class="brand">Dota 2 Info</div>
+
+  <nav class="nav">
+    <a
+      routerLink="/items"
+      routerLinkActive="active"
+      class="nav-link"
+    >
+      Items
+    </a>
+    <a
+      routerLink="/heroes"
+      routerLinkActive="active"
+      class="nav-link"
+    >
+      Heroes
+    </a>
+  </nav>
+</header>
+
+<main class="content">
+  <router-outlet />
 </main>

@@ -2,7 +2,7 @@
   background-color: #2a2a2a;
   border: 1px solid #444;
   color: #ddd;
-  width: 340px;
+  width: 360px;
   font-family: 'Roboto', 'Arial', sans-serif;
   font-size: 14px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
@@ -20,20 +20,196 @@
   border-bottom: 1px solid #444;
 }
 
-.item-icon-name { display: flex; align-items: center; gap: 10px; }
-.item-icon { width: 40px; height: 40px; border-radius: 4px; }
-.item-name { font-weight: 600; color: #f0f0f0; font-size: 16px; }
-.item-cost { display: flex; align-items: center; gap: 4px; color: #f5c542; font-weight: 600; }
+.item-icon-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
 
-.divider { border: none; border-top: 1px solid #444; margin: 0; }
+.item-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  object-fit: cover;
+  background: #222;
+}
 
-.tooltip-attributes { padding: 10px 14px; }
-.attribute-row { display: flex; gap: 6px; margin-bottom: 3px; }
-.attr-value { color: #8ecae6; font-weight: 600; min-width: 30px; }
-.attr-name { color: #ddd; }
+.title-block {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
 
-.tooltip-ability { padding: 10px 14px; }
-.ability-title { font-weight: 600; margin-bottom: 6px; color: #f0f0f0; }
-.ability-description { line-height: 1.45; color: #ccc; }
+.item-name {
+  font-weight: 600;
+  color: #f0f0f0;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-.tooltip-lore { padding: 8px 14px 12px; color: #888; font-style: italic; font-size: 12px; }
+.item-subtitle {
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
+}
+
+.item-cost {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #f5c542;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #444;
+  margin: 0;
+}
+
+/* ── Роли ────────────────────────────── */
+.tooltip-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 14px;
+}
+
+.role-chip {
+  background: #3a3a3a;
+  color: #ddd;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* ── Статы (HP, мана, броня, урон...) ── */
+.tooltip-stats {
+  padding: 8px 14px;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 13px;
+}
+
+.stat-icon {
+  width: 18px;
+  text-align: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.stat-label {
+  color: #aaa;
+  flex: 1;
+}
+
+.stat-value {
+  color: #f0f0f0;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stat-suffix {
+  color: #888;
+  font-weight: 400;
+  font-size: 11px;
+}
+
+/* ── Атрибуты героя STR/AGI/INT ──────── */
+.tooltip-hero-attrs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 14px;
+}
+
+.attr-block {
+  display: grid;
+  grid-template-columns: 20px 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.attr-icon {
+  text-align: center;
+  font-size: 13px;
+}
+
+.attr-label {
+  color: #aaa;
+}
+
+.attr-num {
+  color: #f0f0f0;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: right;
+}
+
+.attr-gain {
+  color: #6cbf5a;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ── Атрибуты предметов ──────────────── */
+.tooltip-attributes {
+  padding: 10px 14px;
+}
+
+.attribute-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 3px;
+  font-size: 13px;
+}
+
+.attr-value {
+  color: #8ecae6;
+  font-weight: 600;
+  min-width: 30px;
+}
+
+.attr-name {
+  color: #ddd;
+}
+
+/* ── Пассивка ────────────────────────── */
+.tooltip-ability {
+  padding: 10px 14px;
+}
+
+.ability-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #f0f0f0;
+}
+
+.ability-description {
+  line-height: 1.45;
+  color: #ccc;
+  font-size: 13px;
+}
+
+/* ── Лор ─────────────────────────────── */
+.tooltip-lore {
+  padding: 8px 14px 12px;
+  color: #888;
+  font-style: italic;
+  font-size: 12px;
+}

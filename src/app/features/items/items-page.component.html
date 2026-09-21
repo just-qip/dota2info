@@ -1,0 +1,39 @@
+<section class="page">
+  <header class="page-header">
+    <h1>
+      Items
+      <span class="count" *ngIf="!loading()">({{ items().length }})</span>
+    </h1>
+
+    <nav class="alphabet-nav" *ngIf="!loading()">
+      <a
+        *ngFor="let group of groups(); trackBy: trackByLetter"
+        [href]="'#item-letter-' + group.letter"
+        class="letter-link"
+      >
+        {{ group.letter }}
+      </a>
+    </nav>
+  </header>
+
+  <div *ngIf="loading()" class="loading">Loading items…</div>
+
+  <div class="groups" *ngIf="!loading()">
+    <section
+      class="group"
+      *ngFor="let group of groups(); trackBy: trackByLetter"
+    >
+      <h2 class="group-letter" [id]="'item-letter-' + group.letter">
+        {{ group.letter }}
+        <span class="group-count">{{ group.items.length }}</span>
+      </h2>
+
+      <div class="items-grid">
+        <app-item-icon
+          *ngFor="let entry of group.items; trackBy: trackById"
+          [itemId]="entry.id"
+        />
+      </div>
+    </section>
+  </div>
+</section>

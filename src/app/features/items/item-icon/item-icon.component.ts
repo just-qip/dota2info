@@ -16,14 +16,23 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
       width="64"
       height="64"
       loading="lazy"
+      decoding="async"
     />
   `,
   styles: [
     `
+      :host {
+        display: block;
+      }
       .item-icon {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
         cursor: pointer;
         border-radius: 4px;
         transition: transform 0.1s ease;
+        background: #2a2a2a;
       }
       .item-icon:hover {
         transform: scale(1.05);

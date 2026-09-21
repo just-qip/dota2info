@@ -1,21 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { ItemIconComponent } from './features/items/item-icon/item-icon.component';
-import { DotaDataService } from './core/services/dota-data.service';
+import { Component } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ItemIconComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App implements OnInit {
-  private data = inject(DotaDataService);
-
-  ngOnInit(): void {
-    this.data.preload().subscribe({
-      next: () => console.log('[DotaData] items loaded'),
-      error: (err) => console.error('[DotaData] load failed', err),
-    });
-  }
-}
+export class App {}

@@ -1,31 +1,109 @@
-<div class="dota-tooltip">
+<div class="dota-tooltip" *ngIf="vm">
   <header class="tooltip-header">
     <div class="item-icon-name">
       <img [src]="vm.icon" [alt]="vm.name" class="item-icon" />
-      <span class="item-name">{{ vm.name }}</span>
+      <div class="title-block">
+        <span class="item-name">{{ vm.name }}</span>
+        <span class="item-subtitle" *ngIf="vm.subtitle">{{ vm.subtitle }}</span>
+      </div>
     </div>
     <div class="item-cost" *ngIf="vm.cost">
       <span class="coin-icon">🪙</span> {{ vm.cost }}
     </div>
   </header>
 
-  <hr class="divider" *ngIf="vm.attributes.length" />
+  <!-- ── Роли (для героев) ── -->
+  <ng-container *ngIf="vm.roles && vm.roles.length">
+    <hr class="divider" />
+    <section class="tooltip-roles">
+      <span class="role-chip" *ngFor="let role of vm.roles">{{ role }}</span>
+    </section>
+  </ng-container>
 
-  <section class="tooltip-attributes" *ngIf="vm.attributes.length">
-    <div *ngFor="let attr of vm.attributes" class="attribute-row">
-      <span class="attr-value">+ {{ attr.value }}</span>
-      <span class="attr-name">{{ attr.label }}</span>
-    </div>
-  </section>
+  <!-- ── Основные статы (для героев) ── -->
+  <ng-container *ngIf="vm.stats && vm.stats.length">
+    <hr class="divider" />
+    <section class="tooltip-stats">
+      <div *ngFor="let stat of vm.stats" class="stat-row">
+        <span class="stat-icon">{{ stat.icon }}</span>
+        <span class="stat-label">{{ stat.label }}</span>
+        <span class="stat-value">
+          {{ stat.value }}<span class="stat-suffix" *ngIf="stat.suffix">{{ stat.suffix }}</span>
+        </span>
+      </div>
+    </section>
+  </ng-container>
 
-  <hr class="divider" *ngIf="vm.passive" />
+  <!-- ── Атрибуты героя STR/AGI/INT ── -->
+  <ng-container *ngIf="vm.heroAttrs">
+    <hr class="divider" />
+    <section class="tooltip-hero-attrs">
+      <div class="attr-block">
+        <span class="attr-icon str">💪</span>
+        <span class="attr-label">Strength</span>
+        <span class="attr-num">{{ vm.heroAttrs.str.base }}</span>
+        <span class="attr-gain">+{{ vm.heroAttrs.str.gain }}</span>
+      </div>
+      <div class="attr-block">
+        <span class="attr-icon agi">🏹</span>
+        <span class="attr-label">Agility</span>
+        <span class="attr-num">{{ vm.heroAttrs.agi.base }}</span>
+        <span class="attr-gain">+{{ vm.heroAttrs.agi.gain }}</span>
+      </div>
+      <div class="attr-block">
+        <span class="attr-icon int">📖</span>
+        <span class="attr-label">Intelligence</span>
+        <span class="attr-num">{{ vm.heroAttrs.int.base }}</span>
+        <span class="attr-gain">+{{ vm.heroAttrs.int.gain }}</span>
+      </div>
+    </section>
+  </ng-container>
 
-  <section class="tooltip-ability" *ngIf="vm.passive">
-    <div class="ability-title">Passive: {{ vm.passive.title }}</div>
-    <div class="ability-description" [innerHTML]="vm.passive.description"></div>
-  </section>
+  <!-- ── Дальность атаки / обзор / скорость ── -->
+  <ng-container *ngIf="vm.attackRange !== undefined">
+    <hr class="divider" />
+    <section class="tooltip-stats">
+      <div class="stat-row">
+        <span class="stat-icon">🎯</span>
+        <span class="stat-label">Attack Range</span>
+        <span class="stat-value">{{ vm.attackRange }} <span class="stat-suffix">({{ vm.attackType }})</span></span>
+      </div>
+      <div class="stat-row" *ngIf="vm.moveSpeed !== undefined">
+        <span class="stat-icon">👟</span>
+        <span class="stat-label">Move Speed</span>
+        <span class="stat-value">{{ vm.moveSpeed }}</span>
+      </div>
+      <div class="stat-row" *ngIf="vm.vision">
+        <span class="stat-icon">👁</span>
+        <span class="stat-label">Vision</span>
+        <span class="stat-value">{{ vm.vision.day }} / {{ vm.vision.night }}</span>
+      </div>
+    </section>
+  </ng-container>
 
-  <hr class="divider" *ngIf="vm.lore" />
+  <!-- ── Обычные атрибуты предметов ── -->
+  <ng-container *ngIf="vm.attributes.length">
+    <hr class="divider" />
+    <section class="tooltip-attributes">
+      <div *ngFor="let attr of vm.attributes" class="attribute-row">
+        <span class="attr-value">+ {{ attr.value }}</span>
+        <span class="attr-name">{{ attr.label }}</span>
+      </div>
+    </section>
+  </ng-container>
 
-  <footer class="tooltip-lore" *ngIf="vm.lore">{{ vm.lore }}</footer>
+  <!-- ── Пассивка предмета ── -->
+  <ng-container *ngIf="vm.passive">
+    <hr class="divider" />
+    <section class="tooltip-ability">
+      <div class="ability-title">Passive: {{ vm.passive.title }}</div>
+      <div class="ability-description" [innerHTML]="vm.passive.description"></div>
+    </section>
+  </ng-container>
+
+  <!-- ── Лор ── -->
+  <ng-container *ngIf="vm.lore">
+    <hr class="divider" />
+    <footer class="tooltip-lore">{{ vm.lore }}</footer>
+  </ng-container>
 </div>

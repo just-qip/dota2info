@@ -44,20 +44,8 @@ export class DotaTooltipDirective {
         .position()
         .flexibleConnectedTo(this.host)
         .withPositions([
-          {
-            originX: 'end',
-            originY: 'top',
-            overlayX: 'start',
-            overlayY: 'top',
-            offsetX: 8,
-          },
-          {
-            originX: 'start',
-            originY: 'top',
-            overlayX: 'end',
-            overlayY: 'top',
-            offsetX: -8,
-          },
+          { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top', offsetX: 8 },
+          { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top', offsetX: -8 },
         ])
         .withFlexibleDimensions(false)
         .withPush(true);
@@ -69,7 +57,6 @@ export class DotaTooltipDirective {
 
       const portal = new ComponentPortal(DotaTooltipComponent);
       this.componentRef = this.overlayRef.attach(portal);
-
       this.componentRef.setInput('vm', this.mapItemToViewModel(item));
     });
   }
@@ -92,21 +79,18 @@ export class DotaTooltipDirective {
     const passiveAbility = item.abilities?.find((a) => a.type === 'passive');
 
     return {
-      name: item.dname,
+      name: item.dname ?? 'Unknown Item',
       icon: this.toCdnUrl(item.img),
       cost: item.cost,
       attributes,
       passive: passiveAbility
-        ? {
-            title: passiveAbility.title,
-            description: passiveAbility.description,
-          }
+        ? { title: passiveAbility.title, description: passiveAbility.description }
         : undefined,
       lore: item.lore,
+      kind: 'item',
     };
   }
 
-  /** Преобразует относительный путь из dotaconstants в полный CDN-URL */
   private toCdnUrl(path?: string): string {
     if (!path) return '';
     return path.startsWith('http') ? path : `${CDN}${path}`;

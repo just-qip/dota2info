@@ -1,0 +1,93 @@
+.page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: #f0f0f0;
+}
+
+.count {
+  font-size: 16px;
+  color: #888;
+  font-weight: 400;
+}
+
+.loading {
+  padding: 24px;
+  color: #888;
+}
+
+/* ── Навигация по алфавиту ───────────────── */
+.alphabet-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 0;
+  position: sticky;
+  top: 0;
+  background: #1b1b1b;
+  z-index: 10;
+  border-bottom: 1px solid #333;
+}
+
+.letter-link {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ccc;
+  text-decoration: none;
+  background: #2a2a2a;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.letter-link:hover {
+  background: #f5c542;
+  color: #1b1b1b;
+}
+
+/* ── Группы ──────────────────────────────── */
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.group {
+  scroll-margin-top: 64px;
+}
+
+.group-letter {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f5c542;
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #333;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.group-count {
+  font-size: 13px;
+  color: #666;
+  font-weight: 400;
+}
+
+/* ── Сетка предметов ─────────────────────── */
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 8px;
+}
