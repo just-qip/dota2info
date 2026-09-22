@@ -97,7 +97,7 @@ export interface DotaHeroEntry {
 export interface DotaAbilityAttrib {
   key: string;
   header?: string;
-  value: string | number | boolean;
+  value: string | number | boolean | string[];
   display?: string;
 }
 
@@ -214,7 +214,7 @@ export class DotaDataService {
   }
 
   getHero$(heroId: string): Observable<DotaHero | null> {
-    return this.loadHeroes().pipe(map((heroes) => heroes[heroId] ?? null));
+    return this.loadHeroes().pipe(map((heroes) => this.findHeroByAnyId(heroes, heroId) ?? null));
   }
 
   getAllHeroes$(): Observable<DotaHeroEntry[]> {
@@ -270,22 +270,16 @@ export class DotaDataService {
 
   /**
    * Способности героя.
-   *
-   * heroId — это ключ из heroes.json, то есть "1", "2", ...
-   * А hero_abilities.json использует внутренние имена "npc_dota_hero_antimage".
-   * Поэтому сначала мапим ключ героя на его name, потом смотрим способности.
+   * heroId может быть числовым ключом "1", слагом "antimage" или локализованным "Anti-Mage".
    */
   getHeroAbilities$(heroId: string): Observable<DotaAbilityEntry[]> {
     return combineLatest([this.loadHeroes(), this.loadHeroAbilities(), this.loadAbilities()]).pipe(
       map(([heroes, heroAbilities, abilities]) => {
-        const hero = heroes[heroId];
-        const heroName = hero?.name;
+        const hero = this.findHeroByAnyId(heroes, heroId);
+        if (!hero) return [];
 
-        // Пробуем сначала по внутреннему имени, потом по самому ключу
-        const keys =
-          (heroName && heroAbilities[heroName]?.abilities) ||
-          heroAbilities[heroId]?.abilities ||
-          [];
+        const heroName = hero.name;
+        const keys = heroAbilities[heroName]?.abilities ?? [];
 
         return keys.map((id) => ({ id, ability: abilities[id] })).filter((e) => !!e.ability?.dname);
       }),
@@ -309,6 +303,8 @@ export class DotaDataService {
       tap((heroes) => {
         for (const [id, hero] of Object.entries(heroes)) {
           this.heroCache.set(id, hero);
+          const slug = hero.name?.replace(/^npc_dota_hero_/, '');
+          if (slug) this.heroCache.set(slug, hero);
         }
       }),
       map(() => void 0),
@@ -347,6 +343,7 @@ export class DotaDataService {
       .map(([letter, items]) => ({ letter, items }));
   }
 
+  // ── Внутренние ─────────────────────────────────────────
   private isItemDisplayable(key: string, item: DotaItem): boolean {
     if (!item.dname) return false;
     if (HIDDEN_ITEM_PREFIXES.some((p) => key.startsWith(p))) return false;
@@ -359,5 +356,31 @@ export class DotaDataService {
     if (key.startsWith('special_bonus_')) return false;
     if (key.startsWith('_')) return false;
     return true;
+  }
+
+  /**
+   * Ищет героя по любому из возможных идентификаторов:
+   *   1. Числовой ключ из heroes.json ("1", "2")
+   *   2. Внутренний слаг: "npc_dota_hero_antimage" → "antimage"
+   *   3. Локализованное имя без разделителей: "Anti-Mage" → "antimage"
+   *   4. Локализованное имя с подчёркиваниями: "Anti-Mage" → "anti_mage"
+   */
+  private findHeroByAnyId(heroes: Record<string, DotaHero>, id: string): DotaHero | undefined {
+    if (heroes[id]) return heroes[id];
+
+    const lower = id.toLowerCase();
+
+    for (const h of Object.values(heroes)) {
+      const slug = h.name?.replace(/^npc_dota_hero_/, '');
+      if (slug === lower) return h;
+
+      const lname = h.localized_name?.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (lname === lower) return h;
+
+      const lnameU = h.localized_name?.toLowerCase().replace(/[\s-]+/g, '_');
+      if (lnameU === lower) return h;
+    }
+
+    return undefined;
   }
 }

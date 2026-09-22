@@ -13,8 +13,6 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
         [src]="iconUrl"
         [alt]="displayName || heroId"
         class="hero-icon"
-        width="64"
-        height="64"
         loading="lazy"
         decoding="async"
         (error)="onImgError($event)"
@@ -26,6 +24,7 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
     `
       :host {
         display: block;
+        width: 64px;
       }
       .hero-cell {
         display: flex;
@@ -36,11 +35,11 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
       }
       .hero-icon {
         width: 100%;
-        height: auto;
         aspect-ratio: 1 / 1;
         border-radius: 4px;
         background: #2a2a2a;
         object-fit: cover;
+        display: block;
         transition: transform 0.1s ease;
       }
       .hero-cell:hover .hero-icon {
@@ -66,26 +65,16 @@ export class HeroIconComponent {
   @Input() imgPath = '';
 
   get iconUrl(): string {
-    const raw = this.imgPath || `/apps/dota2/images/dota_react/heroes/${this.heroId}.png`;
-    const clean = this.stripTrailingQuery(raw);
-    return clean.startsWith('http') ? clean : `${CDN}${clean}`;
+    if (this.imgPath) {
+      const clean = this.imgPath.replace(/\?+$/, '');
+      return clean.startsWith('http') ? clean : `${CDN}${clean}`;
+    }
+    // Маленькая квадратная иконка героя (а не большой вертикальный портрет)
+    return `${CDN}/apps/dota2/images/dota_react/heroes/icons/${this.heroId}.png`;
   }
 
   onImgError(event: Event): void {
     const img = event.target as HTMLImageElement;
-    console.warn('[HeroIcon] failed to load', img.src);
-
-    // fallback: пробуем маленькую квадратную иконку
-    if (!img.dataset['retried']) {
-      img.dataset['retried'] = '1';
-      img.src = `${CDN}/apps/dota2/images/dota_react/heroes/icons/${this.heroId}.png`;
-    } else {
-      img.style.visibility = 'hidden';
-    }
-  }
-
-  /** Убирает висящий "?" из пути, который приходит из dotaconstants */
-  private stripTrailingQuery(path: string): string {
-    return path.replace(/\?+$/, '');
+    img.style.visibility = 'hidden';
   }
 }

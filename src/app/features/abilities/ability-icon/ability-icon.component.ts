@@ -1,6 +1,5 @@
-import { Component, Input, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { AbilityTooltipDirective } from '../../../shared/tooltip';
-import { BrokenIconsService } from '../../../core/services/broken-icons.service';
 
 const CDN = 'https://cdn.cloudflare.steamstatic.com';
 
@@ -16,8 +15,6 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
             [src]="iconUrl"
             [alt]="displayName || abilityId"
             class="ability-icon"
-            width="56"
-            height="56"
             decoding="async"
             referrerpolicy="no-referrer"
             (error)="onImgError()"
@@ -35,6 +32,7 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
     `
       :host {
         display: block;
+        width: 64px;
       }
       .ability-cell {
         display: flex;
@@ -44,8 +42,8 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
         cursor: pointer;
       }
       .ability-icon-wrap {
-        width: 100%;
-        aspect-ratio: 1 / 1;
+        width: 64px;
+        height: 64px;
         border-radius: 4px;
         background: #2a2a2a;
         overflow: hidden;
@@ -88,12 +86,10 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AbilityIconComponent implements OnInit {
+export class AbilityIconComponent {
   @Input({ required: true }) abilityId!: string;
   @Input() displayName = '';
   @Input() imgPath = '';
-
-  private broken = inject(BrokenIconsService);
 
   showImage = true;
 
@@ -109,15 +105,7 @@ export class AbilityIconComponent implements OnInit {
     return name.charAt(0).toUpperCase();
   }
 
-  ngOnInit(): void {
-    // Если URL уже помечен как битый — не пытаемся его запросить
-    if (this.broken.isBroken(this.iconUrl)) {
-      this.showImage = false;
-    }
-  }
-
   onImgError(): void {
     this.showImage = false;
-    this.broken.markBroken(this.iconUrl);
   }
 }

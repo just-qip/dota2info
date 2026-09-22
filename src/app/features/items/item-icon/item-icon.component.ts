@@ -13,26 +13,28 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
       [alt]="itemId"
       [appDotaTooltip]="itemId"
       class="item-icon"
-      width="64"
-      height="64"
       loading="lazy"
       decoding="async"
+      (error)="onImgError($event)"
     />
   `,
   styles: [
     `
       :host {
         display: block;
+        width: 64px;
+        height: 64px;
       }
       .item-icon {
-        display: block;
         width: 100%;
-        height: auto;
+        height: 100%;
         aspect-ratio: 1 / 1;
-        cursor: pointer;
         border-radius: 4px;
-        transition: transform 0.1s ease;
         background: #2a2a2a;
+        object-fit: cover;
+        display: block;
+        cursor: pointer;
+        transition: transform 0.1s ease;
       }
       .item-icon:hover {
         transform: scale(1.05);
@@ -43,8 +45,19 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
 })
 export class ItemIconComponent {
   @Input({ required: true }) itemId!: string;
+  @Input() displayName = '';
+  @Input() imgPath = '';
 
   get iconUrl(): string {
+    if (this.imgPath) {
+      const clean = this.imgPath.replace(/\?+$/, '');
+      return clean.startsWith('http') ? clean : `${CDN}${clean}`;
+    }
     return `${CDN}/apps/dota2/images/dota_react/items/${this.itemId}.png`;
+  }
+
+  onImgError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.style.visibility = 'hidden';
   }
 }

@@ -5,7 +5,7 @@
  *   - на чужом сайте (виджет встроен) → абсолютный URL на наш продовый домен
  */
 const OWN_HOSTS = ['localhost', '127.0.0.1', 'dota2info.com'];
-const REMOTE_BASE = 'https://dota2info.com/assets/data';
+const REMOTE_BASE = 'http://localhost:4200/assets/data';
 
 function resolveDataBase(): string {
   if (typeof window === 'undefined') {

@@ -3,13 +3,14 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "npm run build:app && npm run build:elements",
+    "start": "ng serve dota2info",
+    "serve": "ng serve dota2info",
+    "watch": "ng build dota2info --watch --configuration development",
+    "test": "ng test dota2info",
+    "build": "npm run build:app && npm run build:elements && npm run copy:elements",
     "build:app": "ng build dota2info --configuration production",
     "build:elements": "ng build dota2info-elements --configuration production",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr": "node dist/dota2info/server/server.mjs"
+    "copy:elements": "node -e \"const fs=require('fs');fs.mkdirSync('public/widget',{recursive:true});fs.copyFileSync('dist/dota2info-elements/main.js','public/widget/elements.js');console.log('copied elements.js → public/widget/')\""
   },
   "private": true,
   "packageManager": "npm@10.8.2",
