@@ -7,6 +7,7 @@ import { combineLatest, of } from 'rxjs';
 import { DotaAbilityEntry, DotaDataService, DotaHero } from '../../core/services/dota-data.service';
 import { AbilityIconComponent } from '../abilities/ability-icon/ability-icon.component';
 import { toCdnUrl } from '../../shared/dota-format';
+import { PageTitleService } from '../../core/services/page-title.service';
 
 const ATTR_LABELS: Record<string, string> = {
   str: 'Strength',
@@ -33,6 +34,7 @@ export class HeroPageComponent implements OnInit {
   private data = inject(DotaDataService);
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
+  private pageTitle = inject(PageTitleService);
 
   hero = signal<DotaHero | null>(null);
   abilities = signal<DotaAbilityEntry[]>([]);
@@ -48,6 +50,7 @@ export class HeroPageComponent implements OnInit {
         map((params) => params.get('id')),
         distinctUntilChanged(),
         tap(() => {
+          this.pageTitle.set('Hero');
           this.loading.set(true);
           this.error.set(null);
           this.hero.set(null);
@@ -82,6 +85,7 @@ export class HeroPageComponent implements OnInit {
           this.hero.set(result.hero);
           this.abilities.set(result.abilities);
           this.lore.set(result.lore);
+          this.pageTitle.set(result.hero.localized_name);
           this.loading.set(false);
         },
         error: (err) => {

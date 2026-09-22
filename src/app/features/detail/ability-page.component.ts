@@ -13,6 +13,7 @@ import {
   targetLabel,
   toCdnUrl,
 } from '../../shared/dota-format';
+import { PageTitleService } from '../../core/services/page-title.service';
 
 @Component({
   selector: 'app-ability-page',
@@ -25,6 +26,7 @@ export class AbilityPageComponent implements OnInit {
   private data = inject(DotaDataService);
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
+  private pageTitle = inject(PageTitleService);
 
   ability = signal<DotaAbility | null>(null);
   attributes = signal<RenderedAttribute[]>([]);
@@ -39,6 +41,7 @@ export class AbilityPageComponent implements OnInit {
         map((params) => params.get('id')),
         distinctUntilChanged(),
         tap(() => {
+          this.pageTitle.set('Ability');
           this.loading.set(true);
           this.error.set(null);
           this.ability.set(null);
@@ -65,6 +68,7 @@ export class AbilityPageComponent implements OnInit {
           }
           this.ability.set(ability);
           this.attributes.set((ability.attrib ?? []).map(renderAttribute));
+          this.pageTitle.set(ability.dname ?? 'Ability');
           this.loading.set(false);
         },
         error: (err) => {

@@ -7,6 +7,7 @@ import { of } from 'rxjs';
 import { DotaDataService, DotaItem, DotaItemAbility } from '../../core/services/dota-data.service';
 import { ItemIconComponent } from '../items/item-icon/item-icon.component';
 import { RenderedAttribute, renderAttribute, toCdnUrl } from '../../shared/dota-format';
+import { PageTitleService } from '../../core/services/page-title.service';
 
 @Component({
   selector: 'app-item-page',
@@ -19,6 +20,7 @@ export class ItemPageComponent implements OnInit {
   private data = inject(DotaDataService);
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
+  private pageTitle = inject(PageTitleService);
 
   item = signal<DotaItem | null>(null);
   attributes = signal<RenderedAttribute[]>([]);
@@ -34,6 +36,7 @@ export class ItemPageComponent implements OnInit {
         map((params) => params.get('id')),
         distinctUntilChanged(),
         tap(() => {
+          this.pageTitle.set('Item');
           this.loading.set(true);
           this.error.set(null);
           this.item.set(null);
@@ -62,6 +65,7 @@ export class ItemPageComponent implements OnInit {
           this.item.set(item);
           this.attributes.set((item.attrib ?? []).map(renderAttribute));
           this.components.set((item.components ?? []).filter((c) => !!c));
+          this.pageTitle.set(item.dname ?? 'Item');
           this.loading.set(false);
         },
         error: (err) => {

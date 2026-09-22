@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HeroIconComponent } from './hero-icon/hero-icon.component';
 import { DotaDataService, DotaHeroEntry, LetterGroup } from '../../core/services/dota-data.service';
+import { PageTitleService } from '../../core/services/page-title.service';
 
 @Component({
   selector: 'app-heroes-page',
@@ -13,6 +14,7 @@ import { DotaDataService, DotaHeroEntry, LetterGroup } from '../../core/services
 })
 export class HeroesPageComponent implements OnInit {
   private data = inject(DotaDataService);
+  private pageTitle = inject(PageTitleService);
 
   heroes = signal<DotaHeroEntry[]>([]);
   loading = signal(true);
@@ -23,6 +25,8 @@ export class HeroesPageComponent implements OnInit {
   );
 
   ngOnInit(): void {
+    this.pageTitle.set('Heroes');
+
     this.data.getAllHeroes$().subscribe({
       next: (heroes) => {
         this.heroes.set(heroes);

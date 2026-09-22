@@ -5,6 +5,7 @@ import {
   DotaPatchChange,
   DotaPatchEntry,
 } from '../../core/services/dota-data.service';
+import { PageTitleService } from '../../core/services/page-title.service';
 
 @Component({
   selector: 'app-patch-notes-page',
@@ -15,6 +16,7 @@ import {
 })
 export class PatchNotesPageComponent implements OnInit {
   private data = inject(DotaDataService);
+  private pageTitle = inject(PageTitleService);
 
   patches = signal<DotaPatchEntry[]>([]);
   loading = signal(true);
@@ -24,6 +26,8 @@ export class PatchNotesPageComponent implements OnInit {
   private expanded = signal<Set<string>>(new Set());
 
   ngOnInit(): void {
+    this.pageTitle.set('Patch Notes');
+
     this.data.getAllPatchNotes$().subscribe({
       next: (patches) => {
         this.patches.set(patches);

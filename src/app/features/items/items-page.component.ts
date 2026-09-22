@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ItemIconComponent } from './item-icon/item-icon.component';
 import { DotaDataService, DotaItemEntry, LetterGroup } from '../../core/services/dota-data.service';
+import { PageTitleService } from '../../core/services/page-title.service';
 
 @Component({
   selector: 'app-items-page',
@@ -13,6 +14,7 @@ import { DotaDataService, DotaItemEntry, LetterGroup } from '../../core/services
 })
 export class ItemsPageComponent implements OnInit {
   private data = inject(DotaDataService);
+  private pageTitle = inject(PageTitleService);
 
   items = signal<DotaItemEntry[]>([]);
   loading = signal(true);
@@ -23,6 +25,8 @@ export class ItemsPageComponent implements OnInit {
   );
 
   ngOnInit(): void {
+    this.pageTitle.set('Items');
+
     this.data.getAllItems$().subscribe({
       next: (items) => {
         this.items.set(items);

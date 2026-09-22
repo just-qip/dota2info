@@ -7,6 +7,7 @@ import {
   DotaDataService,
   LetterGroup,
 } from '../../core/services/dota-data.service';
+import { PageTitleService } from '../../core/services/page-title.service';
 
 @Component({
   selector: 'app-abilities-page',
@@ -17,6 +18,7 @@ import {
 })
 export class AbilitiesPageComponent implements OnInit {
   private data = inject(DotaDataService);
+  private pageTitle = inject(PageTitleService);
 
   abilities = signal<DotaAbilityEntry[]>([]);
   loading = signal(true);
@@ -27,6 +29,8 @@ export class AbilitiesPageComponent implements OnInit {
   );
 
   ngOnInit(): void {
+    this.pageTitle.set('Abilities');
+
     this.data.getAllAbilities$().subscribe({
       next: (abilities) => {
         this.abilities.set(abilities);

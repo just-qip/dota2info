@@ -1,5 +1,6 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PageTitleService } from '../../core/services/page-title.service';
 
 interface WidgetInput {
   name: string;
@@ -24,8 +25,14 @@ interface WidgetDoc {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IntegrationGuidePageComponent {
+  private pageTitle = inject(PageTitleService);
+
   readonly scriptUrl = 'https://dota2db.com/widget/elements.js';
   readonly siteOrigin = 'https://dota2db.com';
+
+  constructor() {
+    this.pageTitle.set('Integration Guide');
+  }
 
   // ── Snippets (kept in TS so Angular never parses their braces) ──
   readonly snippetScriptTag = `<script src="${this.scriptUrl}" type="module"></script>`;
