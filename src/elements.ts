@@ -12,9 +12,9 @@ import { DotaDataService } from './app/core/services/dota-data.service';
  * Точка входа для сборки виджетов.
  * Регистрирует кастомные элементы <dota-item-icon>, <dota-hero-icon>, <dota-ability-icon>
  * и автоматически заменяет ссылки вида
- *   https://<наш-домен>/item?id=blink
- *   https://<наш-домен>/hero?id=antimage
- *   https://<наш-домен>/ability?id=antimage_mana_break
+ *   https://dota2db.com/item?id=blink
+ *   https://dota2db.com/hero?id=4
+ *   https://dota2db.com/ability?id=antimage_mana_break
  * на соответствующий web-component.
  */
 (async () => {
@@ -49,6 +49,14 @@ import { DotaDataService } from './app/core/services/dota-data.service';
 //  Auto-embed: превращаем ссылки на наши страницы в виджеты
 // ─────────────────────────────────────────────────────────────
 
+/**
+ * Хосты, ссылки на которые считаются «нашими» и подлежат автозамене.
+ *  - скрипт, откуда бы он ни грузился (localhost, CDN, прод);
+ *  - каноничные публичные хосты проекта (чтобы пример-ссылка на dota2db.com
+ *    работала и при локальном тестировании виджета).
+ */
+const CANONICAL_HOSTS = ['dota2db.com', 'www.dota2db.com'];
+
 type EmbedKind = 'item' | 'hero' | 'ability';
 
 interface EmbedInfo {
@@ -58,11 +66,6 @@ interface EmbedInfo {
   id: string;
 }
 
-/**
- * Хост, на котором живёт сам скрипт. Ссылки на этот хост заменяются виджетами.
- * Ссылки на любые другие домены игнорируются — чтобы случайно не заменить
- * чужие ссылки, если кто-то встроил виджет через прокси.
- */
 function getScriptHost(): string | null {
   try {
     const url = (import.meta as any)?.url as string | undefined;
@@ -73,14 +76,21 @@ function getScriptHost(): string | null {
   }
 }
 
-function parsePageLink(href: string, targetHost: string): EmbedInfo | null {
+function getRecognizedHosts(): string[] {
+  const hosts = new Set<string>(CANONICAL_HOSTS);
+  const scriptHost = getScriptHost();
+  if (scriptHost) hosts.add(scriptHost);
+  return Array.from(hosts);
+}
+
+function parsePageLink(href: string, hosts: string[]): EmbedInfo | null {
   let url: URL;
   try {
     url = new URL(href, location.href);
   } catch {
     return null;
   }
-  if (url.hostname !== targetHost) return null;
+  if (!hosts.includes(url.hostname)) return null;
 
   // нормализуем путь: "/item/" → "/item"
   const path = url.pathname.replace(/\/+$/, '') || '/';
@@ -130,16 +140,27 @@ async function embedWidget(
   widget.setAttribute(info.idAttr, info.id);
   if (displayName) widget.setAttribute('display-name', displayName);
 
-  // Сохраняем title/aria, если они были заданы автором ссылки.
+  // Сохраняем title, если он был задан автором ссылки.
   if (anchor.title) widget.setAttribute('title', anchor.title);
 
   anchor.replaceWith(widget);
+
+  // Уведомляем страницу-хост — удобно для тестовых логов.
+  try {
+    window.dispatchEvent(
+      new CustomEvent('dota-widget-embedded', {
+        detail: { kind: info.kind, id: info.id, displayName },
+      }),
+    );
+  } catch {
+    /* ignore */
+  }
 }
 
 function setupPageLinkEmbeds(data: DotaDataService): void {
-  const targetHost = getScriptHost();
-  if (!targetHost) {
-    console.warn('[DotaWidgets] не удалось определить хост скрипта — auto-embed отключён');
+  const hosts = getRecognizedHosts();
+  if (hosts.length === 0) {
+    console.warn('[DotaWidgets] нет распознанных хостов — auto-embed отключён');
     return;
   }
 
@@ -149,10 +170,9 @@ function setupPageLinkEmbeds(data: DotaDataService): void {
     const anchors = root.querySelectorAll<HTMLAnchorElement>('a[href]');
     anchors.forEach((anchor) => {
       if (processed.has(anchor)) return;
-      const info = parsePageLink(anchor.href, targetHost);
+      const info = parsePageLink(anchor.href, hosts);
       if (!info) return;
       processed.add(anchor);
-      // не await — параллельно
       void embedWidget(anchor, info, data);
     });
   };
@@ -168,7 +188,7 @@ function setupPageLinkEmbeds(data: DotaDataService): void {
           if (el.tagName === 'A') {
             const anchor = el as HTMLAnchorElement;
             if (!processed.has(anchor)) {
-              const info = parsePageLink(anchor.href, targetHost);
+              const info = parsePageLink(anchor.href, hosts);
               if (info) {
                 processed.add(anchor);
                 void embedWidget(anchor, info, data);
