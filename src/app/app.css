@@ -6,9 +6,10 @@
 }
 
 .topbar {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 12px 24px;
   background: #222;
   border-bottom: 1px solid #333;
@@ -18,6 +19,8 @@
 }
 
 .brand {
+  position: absolute;
+  left: 24px;
   font-weight: 700;
   font-size: 16px;
   color: #f5c542;

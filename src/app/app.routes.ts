@@ -24,5 +24,12 @@ export const routes: Routes = [
         (m) => m.PatchNotesPageComponent,
       ),
   },
+  {
+    path: 'integration',
+    loadComponent: () =>
+      import('./features/integration-guide/integration-guide-page.component').then(
+        (m) => m.IntegrationGuidePageComponent,
+      ),
+  },
   { path: '**', redirectTo: 'items' },
 ];

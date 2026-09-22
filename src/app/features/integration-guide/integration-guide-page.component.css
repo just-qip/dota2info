@@ -1,0 +1,293 @@
+.page {
+  padding: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.page-header {
+  margin-bottom: 32px;
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #f0f0f0;
+}
+
+.subtitle {
+  color: #999;
+  font-size: 15px;
+  margin: 0;
+}
+
+.brand-accent {
+  color: #f5c542;
+  font-weight: 600;
+}
+
+/* ── Секции ─────────────────────────────────────── */
+.block {
+  margin-bottom: 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.block--last {
+  border-bottom: none;
+}
+
+.block h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 16px;
+  color: #f5c542;
+}
+
+.block h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 24px 0 10px;
+  color: #ddd;
+}
+
+.block p {
+  color: #bbb;
+  margin: 0 0 12px;
+}
+
+.block code {
+  background: #2a2a2a;
+  color: #e8b84b;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  font-size: 13px;
+}
+
+.muted {
+  color: #777;
+}
+
+/* ── Код-блоки ──────────────────────────────────── */
+.code {
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin: 12px 0 20px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #d4d4d4;
+  white-space: pre;
+}
+
+.code code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-size: inherit;
+}
+
+.code--sm {
+  padding: 10px 12px;
+  font-size: 12px;
+}
+
+/* ── Карточки виджетов ──────────────────────────── */
+.widget-card {
+  background: #1f1f1f;
+  border: 1px solid #2e2e2e;
+  border-radius: 8px;
+  padding: 20px 22px;
+  margin-bottom: 20px;
+}
+
+.widget-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.widget-card__header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.tag {
+  background: #2a2a2a;
+  color: #8ecae6;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #f5c542;
+  background: rgba(245, 197, 66, 0.1);
+  border: 1px solid rgba(245, 197, 66, 0.35);
+  padding: 3px 8px;
+  border-radius: 10px;
+}
+
+.widget-card__desc {
+  color: #bbb;
+  margin: 0 0 14px;
+  font-size: 14px;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #777;
+  margin: 18px 0 8px;
+}
+
+/* ── Таблицы атрибутов ──────────────────────────── */
+.attrs {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.attrs th,
+.attrs td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #2a2a2a;
+  vertical-align: top;
+}
+
+.attrs th {
+  color: #888;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.attrs td {
+  color: #ccc;
+}
+
+.attrs td:first-child code {
+  color: #8ecae6;
+}
+
+.req {
+  color: #6cbf5a;
+  font-weight: 600;
+}
+
+/* ── Callouts ───────────────────────────────────── */
+.callout {
+  border-radius: 6px;
+  padding: 14px 16px;
+  margin: 16px 0;
+  border-left: 3px solid;
+  font-size: 14px;
+}
+
+.callout p {
+  margin: 0;
+  color: #bbb;
+}
+
+.callout__title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.callout--info {
+  background: rgba(142, 202, 230, 0.06);
+  border-left-color: #8ecae6;
+}
+
+.callout--info .callout__title {
+  color: #8ecae6;
+}
+
+.callout--warn {
+  background: rgba(245, 197, 66, 0.06);
+  border-left-color: #f5c542;
+}
+
+.callout--warn .callout__title {
+  color: #f5c542;
+}
+
+.callout .code {
+  margin: 8px 0 0;
+}
+
+/* ── FAQ и ссылки ───────────────────────────────── */
+.faq {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.faq li {
+  background: #1f1f1f;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 14px 16px;
+  color: #bbb;
+  font-size: 14px;
+}
+
+.faq strong {
+  color: #ddd;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.links li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: #bbb;
+  font-size: 14px;
+}
+
+.link-icon {
+  flex-shrink: 0;
+}
+
+.links a {
+  color: #8ecae6;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s;
+}
+
+.links a:hover {
+  color: #f5c542;
+  text-decoration: underline;
+}

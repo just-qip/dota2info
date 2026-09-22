@@ -1,0 +1,178 @@
+<section class="page">
+  <header class="page-header">
+    <h1>Integration Guide</h1>
+    <p class="subtitle">
+      Embeddable <span class="brand-accent">Dota2DB</span> web components — item,
+      hero and ability icons with rich tooltips. Works on any site: plain HTML,
+      React, Vue, Svelte, WordPress.
+    </p>
+  </header>
+
+  <!-- ── 1. Quick start ─────────────────────────────── -->
+  <section class="block">
+    <h2>1. Quick start</h2>
+    <p>
+      Load the script from our CDN. It registers all custom elements
+      automatically. No bundlers, no dependencies, no install step.
+    </p>
+
+    <pre class="code"><code>{{ snippetScriptTag }}</code></pre>
+
+    <p>Then use the elements anywhere on the page:</p>
+
+    <pre class="code"><code>{{ snippetBasicUsage }}</code></pre>
+
+    <aside class="callout callout--info">
+      <div class="callout__title">ℹ️ How it works</div>
+      <p>
+        The script ships a fully self-contained Angular application that boots
+        the first time a widget appears on the page. JSON datasets are fetched
+        directly from <code>dota2db.com</code> — your site does not need to
+        host anything.
+      </p>
+    </aside>
+  </section>
+
+  <!-- ── 2. Widget reference ────────────────────────── -->
+  <section class="block">
+    <h2>2. Widget reference</h2>
+
+    <article class="widget-card" *ngFor="let w of widgets">
+      <header class="widget-card__header">
+        <h3><code class="tag">&lt;{{ w.tag }}&gt;</code></h3>
+        <span class="badge">Web Component</span>
+      </header>
+
+      <p class="widget-card__desc">{{ w.description }}</p>
+
+      <h4 class="section-label">Attributes</h4>
+      <table class="attrs">
+        <thead>
+        <tr>
+          <th>Attribute</th>
+          <th>Type</th>
+          <th>Required</th>
+          <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let input of w.inputs">
+          <td><code>{{ input.name }}</code></td>
+          <td><code class="muted">{{ input.type }}</code></td>
+          <td>
+            <span *ngIf="input.required" class="req">yes</span>
+            <span *ngIf="!input.required" class="muted">no</span>
+          </td>
+          <td>{{ input.description }}</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <h4 class="section-label">Example</h4>
+      <pre class="code"><code>{{ w.example }}</code></pre>
+    </article>
+  </section>
+
+  <!-- ── 3. Sizing ──────────────────────────────────── -->
+  <section class="block">
+    <h2>3. Sizing</h2>
+    <p>
+      Icons respect the CSS variable <code>--dota-icon-size</code>. Set it via
+      inline style or CSS — every widget inside the container will pick it up.
+    </p>
+
+    <pre class="code"><code>{{ snippetSizeInline }}</code></pre>
+
+    <p class="muted">
+      Defaults: <code>72px</code> for items, <code>88px</code> for heroes and
+      abilities.
+    </p>
+  </section>
+
+  <!-- ── 4. Styling ─────────────────────────────────── -->
+  <section class="block">
+    <h2>4. Styling</h2>
+    <p>
+      Tooltips are rendered inside <code>cdk-overlay-container</code>, which is
+      attached to <code>&lt;body&gt;</code>. To avoid conflicts, add your own
+      container and style only the wrapper element:
+    </p>
+
+    <pre class="code"><code>{{ snippetStyling }}</code></pre>
+  </section>
+
+  <!-- ── 5. Integration examples ────────────────────── -->
+  <section class="block">
+    <h2>5. Integration examples</h2>
+
+    <h3>HTML / static site</h3>
+    <pre class="code"><code>{{ snippetHtml }}</code></pre>
+
+    <h3>React</h3>
+    <pre class="code"><code>{{ snippetReact }}</code></pre>
+
+    <h3>Vue 3</h3>
+    <pre class="code"><code>{{ snippetVue }}</code></pre>
+  </section>
+
+  <!-- ── 6. Data & CORS ─────────────────────────────── -->
+  <section class="block">
+    <h2>6. Data &amp; CORS</h2>
+    <p>
+      All datasets (<code>items.json</code>, <code>heroes.json</code>,
+      <code>abilities.json</code>, <code>hero_lore.json</code>,
+      <code>patchnotes.json</code>) are served from our domain with permissive
+      CORS headers. You do not need to proxy or cache anything.
+    </p>
+
+    <aside class="callout callout--warn">
+      <div class="callout__title">⚠️ Content Security Policy</div>
+      <p>
+        If your site enforces a strict CSP, allow our domain explicitly:
+      </p>
+      <pre class="code code--sm"><code>{{ snippetCsp }}</code></pre>
+    </aside>
+  </section>
+
+  <!-- ── 7. Troubleshooting ─────────────────────────── -->
+  <section class="block">
+    <h2>7. Troubleshooting</h2>
+
+    <ul class="faq">
+      <li *ngFor="let item of faq">
+        <strong>{{ item.title }}</strong>
+        <span>{{ item.body }}</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ── 8. Links ───────────────────────────────────── -->
+  <section class="block block--last">
+    <h2>8. Useful links</h2>
+    <ul class="links">
+      <li>
+        <span class="link-icon">🔗</span>
+        <a href="https://dota2db.com" target="_blank" rel="noopener">
+          dota2db.com
+        </a>
+        — main project site.
+      </li>
+      <li>
+        <span class="link-icon">📦</span>
+        <a [href]="scriptUrl" target="_blank" rel="noopener">elements.js</a>
+        — web components bundle (opens in the browser as text).
+      </li>
+      <li>
+        <span class="link-icon">📚</span>
+        <a
+          href="https://github.com/odota/dotaconstants"
+          target="_blank"
+          rel="noopener"
+        >
+          dotaconstants
+        </a>
+        — source datasets for heroes, items and abilities.
+      </li>
+    </ul>
+  </section>
+</section>
