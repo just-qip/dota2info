@@ -33,9 +33,83 @@
     </aside>
   </section>
 
-  <!-- ── 2. Widget reference ────────────────────────── -->
+  <!-- ── 2. Href auto-embed ─────────────────────────── -->
   <section class="block">
-    <h2>2. Widget reference</h2>
+    <h2>2. Href auto-embed</h2>
+    <p>
+      The most convenient way to render a widget — just write a plain link to
+      the corresponding page on <code>dota2db.com</code>. The script
+      automatically detects such links in your markup (and in anything added
+      later) and replaces their content with the matching widget.
+    </p>
+
+    <h3>Link to page</h3>
+    <p>
+      Supported URL shapes:
+    </p>
+    <table class="attrs">
+      <thead>
+      <tr>
+        <th>URL</th>
+        <th>Renders as</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td><code>{{ siteOrigin }}/item?id=blink</code></td>
+        <td><code>&lt;dota-item-icon&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>{{ siteOrigin }}/hero?id=antimage</code></td>
+        <td><code>&lt;dota-hero-icon&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>{{ siteOrigin }}/ability?id=antimage_mana_break</code></td>
+        <td><code>&lt;dota-ability-icon&gt;</code></td>
+      </tr>
+      </tbody>
+    </table>
+
+    <h3>Single link</h3>
+    <pre class="code"><code>{{ snippetHrefStatic }}</code></pre>
+    <p class="muted">
+      After the script loads, this becomes a live
+      <code>&lt;dota-hero-icon&gt;</code> wrapped in the same
+      <code>&lt;a&gt;</code>. Hover shows the tooltip, click navigates to the
+      hero page on <code>dota2db.com</code>.
+    </p>
+
+    <h3>Inside prose</h3>
+    <p>
+      Because only the content is swapped and the anchor itself is preserved,
+      auto-embed works well inside regular paragraphs — no manual tags needed:
+    </p>
+    <pre class="code"><code>{{ snippetHrefMixed }}</code></pre>
+
+    <aside class="callout callout--info">
+      <div class="callout__title">ℹ️ When does it run?</div>
+      <p>
+        The embedder runs once on page load and continues watching the DOM via
+        <code>MutationObserver</code>. Links that are added later — after an
+        AJAX request, a framework render, or a lazy chunk — are picked up too.
+      </p>
+    </aside>
+
+    <aside class="callout callout--warn">
+      <div class="callout__title">⚠️ All matching links are rewritten</div>
+      <p>
+        Auto-embed is opt-out by host: every <code>&lt;a&gt;</code> whose
+        <code>href</code> points to <code>dota2db.com</code> with a recognised
+        path is replaced. If you want to keep a link as plain text, don't use
+        <code>&lt;a&gt;</code> for it, or render the widget explicitly via
+        <code>&lt;dota-*-icon&gt;</code>.
+      </p>
+    </aside>
+  </section>
+
+  <!-- ── 3. Widget reference ────────────────────────── -->
+  <section class="block">
+    <h2>3. Widget reference</h2>
 
     <article class="widget-card" *ngFor="let w of widgets">
       <header class="widget-card__header">
@@ -73,9 +147,9 @@
     </article>
   </section>
 
-  <!-- ── 3. Sizing ──────────────────────────────────── -->
+  <!-- ── 4. Sizing ──────────────────────────────────── -->
   <section class="block">
-    <h2>3. Sizing</h2>
+    <h2>4. Sizing</h2>
     <p>
       Icons respect the CSS variable <code>--dota-icon-size</code>. Set it via
       inline style or CSS — every widget inside the container will pick it up.
@@ -89,9 +163,9 @@
     </p>
   </section>
 
-  <!-- ── 4. Styling ─────────────────────────────────── -->
+  <!-- ── 5. Styling ─────────────────────────────────── -->
   <section class="block">
-    <h2>4. Styling</h2>
+    <h2>5. Styling</h2>
     <p>
       Tooltips are rendered inside <code>cdk-overlay-container</code>, which is
       attached to <code>&lt;body&gt;</code>. To avoid conflicts, add your own
@@ -101,9 +175,9 @@
     <pre class="code"><code>{{ snippetStyling }}</code></pre>
   </section>
 
-  <!-- ── 5. Integration examples ────────────────────── -->
+  <!-- ── 6. Integration examples ────────────────────── -->
   <section class="block">
-    <h2>5. Integration examples</h2>
+    <h2>6. Integration examples</h2>
 
     <h3>HTML / static site</h3>
     <pre class="code"><code>{{ snippetHtml }}</code></pre>
@@ -115,9 +189,9 @@
     <pre class="code"><code>{{ snippetVue }}</code></pre>
   </section>
 
-  <!-- ── 6. Data & CORS ─────────────────────────────── -->
+  <!-- ── 7. Data & CORS ─────────────────────────────── -->
   <section class="block">
-    <h2>6. Data &amp; CORS</h2>
+    <h2>7. Data &amp; CORS</h2>
     <p>
       All datasets (<code>items.json</code>, <code>heroes.json</code>,
       <code>abilities.json</code>, <code>hero_lore.json</code>,
@@ -134,9 +208,9 @@
     </aside>
   </section>
 
-  <!-- ── 7. Troubleshooting ─────────────────────────── -->
+  <!-- ── 8. Troubleshooting ─────────────────────────── -->
   <section class="block">
-    <h2>7. Troubleshooting</h2>
+    <h2>8. Troubleshooting</h2>
 
     <ul class="faq">
       <li *ngFor="let item of faq">
@@ -146,9 +220,9 @@
     </ul>
   </section>
 
-  <!-- ── 8. Links ───────────────────────────────────── -->
+  <!-- ── 9. Links ───────────────────────────────────── -->
   <section class="block block--last">
-    <h2>8. Useful links</h2>
+    <h2>9. Useful links</h2>
     <ul class="links">
       <li>
         <span class="link-icon">🔗</span>

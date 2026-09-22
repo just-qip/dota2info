@@ -25,6 +25,7 @@ interface WidgetDoc {
 })
 export class IntegrationGuidePageComponent {
   readonly scriptUrl = 'https://dota2db.com/widget/elements.js';
+  readonly siteOrigin = 'https://dota2db.com';
 
   // ── Snippets (kept in TS so Angular never parses their braces) ──
   readonly snippetScriptTag = `<script src="${this.scriptUrl}" type="module"></script>`;
@@ -32,6 +33,18 @@ export class IntegrationGuidePageComponent {
   readonly snippetBasicUsage = `<dota-item-icon item-id="blink"></dota-item-icon>
 <dota-hero-icon hero-id="antimage"></dota-hero-icon>
 <dota-ability-icon ability-id="antimage_mana_break"></dota-ability-icon>`;
+
+  readonly snippetHrefStatic = `<!-- Автоматически заменится на <dota-hero-icon> -->
+<a href="${this.siteOrigin}/hero?id=4">Bloodseeker</a>`;
+
+  readonly snippetHrefMixed = `<p>
+  Собери билд на
+  <a href="${this.siteOrigin}/hero?id=antimage">Anti-Mage</a>
+  с
+  <a href="${this.siteOrigin}/item?id=blink">Blink Dagger</a>
+  и
+  <a href="${this.siteOrigin}/ability?id=antimage_mana_break">Mana Break</a>.
+</p>`;
 
   readonly snippetSizeInline = `<!-- Single widget -->
 <dota-item-icon item-id="blink" style="--dota-icon-size: 48px;"></dota-item-icon>
@@ -102,9 +115,9 @@ onMounted(() => {
   <dota-hero-icon hero-id="invoker" />
 </template>`;
 
-  readonly snippetCsp = `script-src  'self' https://dota2db.com;
-connect-src 'self' https://dota2db.com;
-img-src     'self' https://cdn.cloudflare.steamstatic.com https://dota2db.com data:;`;
+  readonly snippetCsp = `script-src  'self' ${this.siteOrigin};
+connect-src 'self' ${this.siteOrigin};
+img-src     'self' https://cdn.cloudflare.steamstatic.com ${this.siteOrigin} data:;`;
 
   readonly widgets: WidgetDoc[] = [
     {
@@ -188,6 +201,10 @@ img-src     'self' https://cdn.cloudflare.steamstatic.com https://dota2db.com da
     {
       title: 'Image fails to load.',
       body: 'Icons are served from cdn.cloudflare.steamstatic.com. If that domain is blocked in your region, pass your own img-path or extend img-src in your CSP.',
+    },
+    {
+      title: 'Href auto-embed replaced a link I wanted to keep as text.',
+      body: `The script rewrites <a href> pointing to ${this.siteOrigin}/item|hero|ability?id=… into widgets automatically. If you keep the link as plain text, wrap it in an element that is not an <a> (e.g. a <span> with the URL as text), or render the widget manually with <dota-*-icon>.`,
     },
     {
       title: 'I want to host my own dataset.',
