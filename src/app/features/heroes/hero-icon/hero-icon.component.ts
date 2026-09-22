@@ -13,7 +13,6 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
         [src]="iconUrl"
         [alt]="displayName || heroId"
         class="hero-icon"
-        loading="lazy"
         decoding="async"
         (error)="onImgError($event)"
       />
@@ -65,15 +64,10 @@ export class HeroIconComponent {
   @Input() imgPath = '';
 
   get iconUrl(): string {
-    // 1. Если есть готовый путь из dotaconstants — используем его
     if (this.imgPath) {
       const clean = this.imgPath.replace(/\?+$/, '');
       return clean.startsWith('http') ? clean : `${CDN}${clean}`;
     }
-
-    // 2. Иначе строим портрет героя по heroId — точно такой же,
-    //    какой приходит в heroes.json → hero.img.
-    //    Это тот же файл, что использует главная страница.
     return `${CDN}/apps/dota2/images/dota_react/heroes/${this.heroId}.png`;
   }
 

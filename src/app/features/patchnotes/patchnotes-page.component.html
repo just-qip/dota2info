@@ -1,0 +1,71 @@
+<section class="page">
+  <header class="page-header">
+    <h1>
+      Patch Notes
+      <span class="count" *ngIf="!loading() && !error()">({{ patches().length }})</span>
+    </h1>
+    <p class="subtitle">Balance updates &amp; gameplay changes</p>
+  </header>
+
+  <div *ngIf="loading()" class="loading">Loading patch notes…</div>
+  <div *ngIf="error()" class="error">{{ error() }}</div>
+
+  <div class="patches" *ngIf="!loading() && !error()">
+    <article
+      class="patch"
+      *ngFor="let patch of patches(); trackBy: trackByVersion"
+      [class.expanded]="isExpanded(patch.version)"
+    >
+      <header class="patch-header" (click)="toggle(patch.version)">
+        <div class="patch-title">
+          <span class="chevron">{{ isExpanded(patch.version) ? '▾' : '▸' }}</span>
+          <h2 class="patch-version">{{ patch.version }}</h2>
+          <span class="patch-date" *ngIf="patch.date">
+            {{ patch.date | date: 'mediumDate' }}
+          </span>
+        </div>
+
+        <div class="patch-summary">
+          <span class="chip" *ngIf="patch.general.length">
+            {{ patch.general.length }} general
+          </span>
+          <span class="chip" *ngIf="patch.items.length">
+            {{ patch.items.length }} items
+          </span>
+          <span class="chip" *ngIf="patch.heroes.length">
+            {{ patch.heroes.length }} heroes
+          </span>
+        </div>
+      </header>
+
+      <div class="patch-body" *ngIf="isExpanded(patch.version)">
+        <section class="patch-section" *ngIf="patch.general.length">
+          <h3 class="section-title">General</h3>
+          <ul class="note-list">
+            <li *ngFor="let note of patch.general" [innerHTML]="note"></li>
+          </ul>
+        </section>
+
+        <section class="patch-section" *ngIf="patch.items.length">
+          <h3 class="section-title">Items</h3>
+          <div class="change" *ngFor="let change of patch.items; trackBy: trackByChange">
+            <h4 class="change-name">{{ change.name }}</h4>
+            <ul class="note-list">
+              <li *ngFor="let note of change.notes" [innerHTML]="note"></li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="patch-section" *ngIf="patch.heroes.length">
+          <h3 class="section-title">Heroes</h3>
+          <div class="change" *ngFor="let change of patch.heroes; trackBy: trackByChange">
+            <h4 class="change-name">{{ change.name }}</h4>
+            <ul class="note-list">
+              <li *ngFor="let note of change.notes" [innerHTML]="note"></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    </article>
+  </div>
+</section>

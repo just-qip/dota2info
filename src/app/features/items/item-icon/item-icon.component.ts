@@ -13,7 +13,6 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
       [alt]="itemId"
       [appDotaTooltip]="itemId"
       class="item-icon"
-      loading="lazy"
       decoding="async"
       (error)="onImgError($event)"
     />

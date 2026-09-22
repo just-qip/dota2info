@@ -97,8 +97,6 @@ export class AbilityIconComponent implements OnInit {
   showImage = true;
 
   get iconUrl(): string {
-    // Всегда строим URL по abilityId — тогда кэш совпадает по строке
-    // с тем, что реально уходит в сеть.
     return `${CDN}/apps/dota2/images/dota_react/abilities/${this.abilityId}.png`;
   }
 

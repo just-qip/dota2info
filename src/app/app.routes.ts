@@ -17,5 +17,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/abilities/abilities-page.component').then((m) => m.AbilitiesPageComponent),
   },
+  {
+    path: 'patchnotes',
+    loadComponent: () =>
+      import('./features/patchnotes/patchnotes-page.component').then(
+        (m) => m.PatchNotesPageComponent,
+      ),
+  },
   { path: '**', redirectTo: 'items' },
 ];

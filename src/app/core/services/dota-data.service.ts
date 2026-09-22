@@ -129,6 +129,41 @@ export interface HeroAbilitySet {
   talents?: { name: string; level: number }[];
 }
 
+// ── Patch Notes ──────────────────────────────────────────
+/**
+ * В dotaconstants patchnotes.json заметки могут быть:
+ *   - строкой,
+ *   - объектом { note: string, author?: string },
+ *   - массивом строк и/или объектов.
+ * Поэтому всё нормализуем в string[].
+ */
+export type DotaPatchNoteRaw =
+  | string
+  | { note?: string; author?: string | null }
+  | Array<string | { note?: string; author?: string | null }>;
+
+export interface DotaPatchRaw {
+  patch?: string;
+  patch_timestamp?: number;
+  general?: DotaPatchNoteRaw;
+  items?: Record<string, DotaPatchNoteRaw> | Array<{ key?: string; notes?: DotaPatchNoteRaw }>;
+  heroes?: Record<string, DotaPatchNoteRaw> | Array<{ key?: string; notes?: DotaPatchNoteRaw }>;
+}
+
+export interface DotaPatchChange {
+  key: string;
+  name: string;
+  notes: string[];
+}
+
+export interface DotaPatchEntry {
+  version: string;
+  date: Date | null;
+  general: string[];
+  items: DotaPatchChange[];
+  heroes: DotaPatchChange[];
+}
+
 // ── Общие ────────────────────────────────────────────────
 export interface LetterGroup<T> {
   letter: string;
@@ -163,6 +198,7 @@ export class DotaDataService {
   private abilities$?: Observable<Record<string, DotaAbility>>;
   private heroAbilities$?: Observable<Record<string, HeroAbilitySet>>;
   private heroLore$?: Observable<Record<string, string>>;
+  private patchNotes$?: Observable<Record<string, DotaPatchRaw>>;
 
   private itemCache = new Map<string, DotaItem>();
   private heroCache = new Map<string, DotaHero>();
@@ -228,15 +264,6 @@ export class DotaDataService {
     return this.loadHeroes().pipe(map((heroes) => this.findHeroByAnyId(heroes, heroId) ?? null));
   }
 
-  /**
-   * Лор героя.
-   *
-   * В dotaconstants `hero_lore.json` использует слаги (antimage, axe, ...),
-   * а `heroes.json` — числовые ключи ("1", "2"). Мостим через внутреннее имя:
-   * npc_dota_hero_antimage -> antimage -> лор.
-   *
-   * На случай, если структура поменяется, пробуем несколько вариантов.
-   */
   getHeroLore$(heroId: string): Observable<string | null> {
     return combineLatest([this.loadHeroes(), this.loadHeroLore()]).pipe(
       map(([heroes, lore]) => {
@@ -247,7 +274,6 @@ export class DotaDataService {
         const lowerId = heroId.toLowerCase();
         const lnameUnderscored = hero.localized_name?.toLowerCase().replace(/[\s-]+/g, '_');
 
-        // Пробуем несколько вариантов ключа
         return (
           lore[slug] ??
           lore[lowerId] ??
@@ -319,6 +345,55 @@ export class DotaDataService {
         const keys = heroAbilities[hero.name]?.abilities ?? [];
 
         return keys.map((id) => ({ id, ability: abilities[id] })).filter((e) => !!e.ability?.dname);
+      }),
+    );
+  }
+
+  // ── Patch Notes ────────────────────────────────────────
+  private loadPatchNotes(): Observable<Record<string, DotaPatchRaw>> {
+    if (!this.patchNotes$) {
+      this.patchNotes$ = this.http
+        .get<Record<string, DotaPatchRaw>>(`${this.base}/patchnotes.json`)
+        .pipe(shareReplay(1));
+    }
+    return this.patchNotes$;
+  }
+
+  getAllPatchNotes$(): Observable<DotaPatchEntry[]> {
+    return combineLatest([this.loadPatchNotes(), this.loadItems(), this.loadHeroes()]).pipe(
+      map(([patches, items, heroes]) => {
+        const itemNames = new Map<string, string>();
+        for (const [key, item] of Object.entries(items)) {
+          if (item.dname) itemNames.set(key, item.dname);
+        }
+
+        const heroNames = new Map<string, string>();
+        for (const [key, hero] of Object.entries(heroes)) {
+          if (hero.localized_name) {
+            heroNames.set(key, hero.localized_name);
+            const slug = hero.name?.replace(/^npc_dota_hero_/, '');
+            if (slug) heroNames.set(slug, hero.localized_name);
+          }
+        }
+
+        const entries = Object.entries(patches)
+          .map(([key, raw]) => this.normalizePatch(key, raw, itemNames, heroNames))
+          .filter((e) => !!e.version);
+
+        // DESC: самые свежие патчи — сверху.
+        // Используем localeCompare(..., { numeric: true }) — он корректно
+        // обрабатывает "7.10" > "7.9" и "7.39c" > "7.39b" > "7.39".
+        entries.sort((a, b) => {
+          const byVersion = String(b.version).localeCompare(String(a.version), undefined, {
+            numeric: true,
+            sensitivity: 'base',
+          });
+          if (byVersion !== 0) return byVersion;
+          // при равных версиях — по дате
+          return (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0);
+        });
+
+        return entries;
       }),
     );
   }
@@ -412,5 +487,108 @@ export class DotaDataService {
     }
 
     return undefined;
+  }
+
+  // ── Patch Notes: внутренние (защищённые) ────────────────
+  /**
+   * Принимает что угодно (string, object, array, null) и возвращает string[].
+   */
+  private normalizeNotes(input: unknown): string[] {
+    if (input === null || input === undefined) return [];
+
+    if (typeof input === 'string') {
+      const s = input.trim();
+      return s ? [s] : [];
+    }
+
+    if (Array.isArray(input)) {
+      const result: string[] = [];
+      for (const item of input) {
+        result.push(...this.normalizeNotes(item));
+      }
+      return result;
+    }
+
+    if (typeof input === 'object') {
+      const obj = input as Record<string, unknown>;
+      if (typeof obj['note'] === 'string') {
+        const s = (obj['note'] as string).trim();
+        return s ? [s] : [];
+      }
+      if (obj['notes'] !== undefined) {
+        return this.normalizeNotes(obj['notes']);
+      }
+      return [];
+    }
+
+    return [];
+  }
+
+  /**
+   * Принимает map в виде объекта { key: notes } или массива [{ key, notes }].
+   */
+  private normalizeChangeMap(input: unknown, nameResolver: Map<string, string>): DotaPatchChange[] {
+    if (!input) return [];
+
+    const changes: DotaPatchChange[] = [];
+
+    if (Array.isArray(input)) {
+      for (const entry of input) {
+        if (!entry || typeof entry !== 'object') continue;
+        const obj = entry as Record<string, unknown>;
+        const key = String(obj['key'] ?? obj['name'] ?? '');
+        if (!key) continue;
+        const notes = this.normalizeNotes(obj['notes'] ?? obj['changes'] ?? obj);
+        if (notes.length === 0) continue;
+        changes.push({
+          key,
+          name: nameResolver.get(key) ?? this.prettifyPatchKey(key),
+          notes,
+        });
+      }
+      return changes;
+    }
+
+    if (typeof input === 'object') {
+      for (const [key, value] of Object.entries(input as Record<string, unknown>)) {
+        const notes = this.normalizeNotes(value);
+        if (notes.length === 0) continue;
+        changes.push({
+          key,
+          name: nameResolver.get(key) ?? this.prettifyPatchKey(key),
+          notes,
+        });
+      }
+      return changes;
+    }
+
+    return [];
+  }
+
+  private normalizePatch(
+    fallbackVersion: string,
+    raw: DotaPatchRaw,
+    itemNames: Map<string, string>,
+    heroNames: Map<string, string>,
+  ): DotaPatchEntry {
+    // Ключ объекта из JSON — это всегда версия ("7.39", "6.88f", ...).
+    // Если ключа нет, падаем на raw.patch.
+    const version = String(fallbackVersion || raw.patch || '').trim();
+
+    return {
+      version,
+      date: raw.patch_timestamp ? new Date(raw.patch_timestamp * 1000) : null,
+      general: this.normalizeNotes(raw.general),
+      items: this.normalizeChangeMap(raw.items, itemNames),
+      heroes: this.normalizeChangeMap(raw.heroes, heroNames),
+    };
+  }
+
+  private prettifyPatchKey(key: string): string {
+    return key
+      .replace(/^npc_dota_hero_/, '')
+      .split('_')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
   }
 }

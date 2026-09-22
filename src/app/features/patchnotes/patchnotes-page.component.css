@@ -1,0 +1,189 @@
+.page {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: #f0f0f0;
+}
+
+.count {
+  font-size: 16px;
+  color: #888;
+  font-weight: 400;
+}
+
+.subtitle {
+  color: #777;
+  font-size: 14px;
+  margin: 0;
+}
+
+.loading {
+  padding: 24px;
+  color: #888;
+}
+
+.error {
+  padding: 24px;
+  color: #e57373;
+}
+
+.patches {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.patch {
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.patch.expanded {
+  border-color: #444;
+}
+
+.patch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+
+.patch-header:hover {
+  background: #2a2a2a;
+}
+
+.patch-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.chevron {
+  color: #f5c542;
+  font-size: 14px;
+  width: 12px;
+}
+
+.patch-version {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f5c542;
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+.patch-date {
+  font-size: 13px;
+  color: #888;
+}
+
+.patch-summary {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.chip {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ccc;
+  background: #333;
+  padding: 3px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.patch-body {
+  padding: 4px 18px 18px;
+  border-top: 1px solid #333;
+}
+
+.patch-section {
+  margin-top: 16px;
+}
+
+.patch-section:first-child {
+  margin-top: 12px;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #f5c542;
+  margin: 0 0 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #333;
+}
+
+.change {
+  margin-bottom: 12px;
+  padding-left: 12px;
+  border-left: 2px solid #333;
+}
+
+.change-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #ddd;
+  margin: 0 0 6px;
+}
+
+.note-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.note-list li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #bbb;
+}
+
+.note-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #666;
+}
+
+/* Классы, которые встречаются в HTML заметок dotaconstants */
+:host ::ng-deep .note-list li .Buff {
+  color: #7ed957;
+  font-weight: 600;
+}
+
+:host ::ng-deep .note-list li .Nerf {
+  color: #e57373;
+  font-weight: 600;
+}
+
+:host ::ng-deep .note-list li .Gameplay {
+  color: #f5c542;
+}

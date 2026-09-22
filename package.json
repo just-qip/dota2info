@@ -7,7 +7,8 @@
     "serve": "ng serve dota2info",
     "watch": "ng build dota2info --watch --configuration development",
     "test": "ng test dota2info",
-    "build": "npm run build:app && npm run build:elements && npm run copy:elements",
+    "copy:data": "node -e \"const fs=require('fs');const p=require('path');const files=['items.json','heroes.json','abilities.json','hero_lore.json','hero_abilities.json','patchnotes.json'];const src='node_modules/dotaconstants/build';const dst='src/assets/data';fs.mkdirSync(dst,{recursive:true});for(const f of files){const s=p.join(src,f);if(!fs.existsSync(s)){console.warn('missing: '+s);continue;}fs.copyFileSync(s,p.join(dst,f));console.log('copied '+f+' → '+dst);}\"",
+    "build": "npm run copy:data && npm run build:app && npm run build:elements && npm run copy:elements",
     "build:app": "ng build dota2info --configuration production",
     "build:elements": "ng build dota2info-elements --configuration production",
     "copy:elements": "node -e \"const fs=require('fs');fs.mkdirSync('public/widget',{recursive:true});fs.copyFileSync('dist/dota2info-elements/main.js','public/widget/elements.js');console.log('copied elements.js → public/widget/')\""
