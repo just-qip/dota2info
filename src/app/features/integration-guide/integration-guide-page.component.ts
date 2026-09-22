@@ -34,15 +34,15 @@ export class IntegrationGuidePageComponent {
 <dota-hero-icon hero-id="antimage"></dota-hero-icon>
 <dota-ability-icon ability-id="antimage_mana_break"></dota-ability-icon>`;
 
-  readonly snippetHrefStatic = `<!-- Автоматически заменится на <dota-hero-icon> -->
+  readonly snippetHrefStatic = `<!-- Will be replaced with <dota-hero-icon> automatically -->
 <a href="${this.siteOrigin}/hero?id=4">Bloodseeker</a>`;
 
   readonly snippetHrefMixed = `<p>
-  Собери билд на
+  Build
   <a href="${this.siteOrigin}/hero?id=antimage">Anti-Mage</a>
-  с
+  with
   <a href="${this.siteOrigin}/item?id=blink">Blink Dagger</a>
-  и
+  and
   <a href="${this.siteOrigin}/ability?id=antimage_mana_break">Mana Break</a>.
 </p>`;
 
