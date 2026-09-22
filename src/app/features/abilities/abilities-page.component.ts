@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { AbilityIconComponent } from './ability-icon/ability-icon.component';
 import {
   DotaAbilityEntry,
@@ -10,7 +11,7 @@ import {
 @Component({
   selector: 'app-abilities-page',
   standalone: true,
-  imports: [CommonModule, AbilityIconComponent],
+  imports: [CommonModule, RouterLink, AbilityIconComponent],
   templateUrl: './abilities-page.component.html',
   styleUrl: './abilities-page.component.css',
 })

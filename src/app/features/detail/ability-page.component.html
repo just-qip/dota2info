@@ -1,0 +1,94 @@
+<section class="page">
+  <div *ngIf="loading()" class="state">Loading ability…</div>
+  <div *ngIf="error()" class="state state--error">{{ error() }}</div>
+
+  <ng-container *ngIf="ability() as ability">
+    <header class="head">
+      <img
+        *ngIf="ability.img"
+        class="head__icon"
+        [src]="toCdnUrl(ability.img)"
+        [alt]="ability.dname"
+        decoding="async"
+        referrerpolicy="no-referrer"
+      />
+      <div class="head__title">
+        <h1>{{ ability.dname || 'Unknown Ability' }}</h1>
+        <div class="head__meta">
+          <span *ngIf="behavior" class="tag">{{ behavior }}</span>
+          <span *ngIf="target" class="tag tag--soft">{{ target }}</span>
+          <span *ngIf="ability.dmg_type" class="tag tag--dmg">
+            {{ ability.dmg_type }}
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <section class="block" *ngIf="hasManaCost || hasCooldown || manaCostLevels || cooldownLevels">
+      <h2>Cast Parameters</h2>
+      <ul class="param-list">
+        <li *ngIf="hasManaCost || manaCostLevels">
+          <span class="param-list__icon">🔷</span>
+          <span class="param-list__label">Mana Cost</span>
+          <span class="param-list__value">
+            <ng-container *ngIf="manaCostLevels; else plainMana">
+              <span class="level-chain">
+                <ng-container *ngFor="let lvl of manaCostLevels; let last = last">
+                  <span class="chip">{{ lvl }}</span>
+                  <span *ngIf="!last" class="arrow">→</span>
+                </ng-container>
+              </span>
+            </ng-container>
+            <ng-template #plainMana>{{ ability.mc }}</ng-template>
+          </span>
+        </li>
+
+        <li *ngIf="hasCooldown || cooldownLevels">
+          <span class="param-list__icon">⏱</span>
+          <span class="param-list__label">Cooldown</span>
+          <span class="param-list__value">
+            <ng-container *ngIf="cooldownLevels; else plainCd">
+              <span class="level-chain">
+                <ng-container *ngFor="let lvl of cooldownLevels; let last = last">
+                  <span class="chip">{{ lvl }}</span>
+                  <span *ngIf="!last" class="arrow">→</span>
+                </ng-container>
+              </span>
+            </ng-container>
+            <ng-template #plainCd>{{ ability.cd }}</ng-template>
+          </span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="block" *ngIf="ability.desc">
+      <h2>Description</h2>
+      <div class="desc" [innerHTML]="ability.desc"></div>
+    </section>
+
+    <section class="block" *ngIf="attributes().length">
+      <h2>Attributes</h2>
+      <ul class="attr-list">
+        <li *ngFor="let attr of attributes(); trackBy: trackByAttribute">
+          <span class="attr-list__name">{{ attr.label }}</span>
+          <span class="attr-list__value">
+            <ng-container *ngIf="attr.levels; else plain">
+              <span class="level-chain">
+                <ng-container *ngFor="let lvl of attr.levels; let last = last">
+                  <span class="chip">{{ lvl }}</span>
+                  <span *ngIf="!last" class="arrow">→</span>
+                </ng-container>
+              </span>
+            </ng-container>
+            <ng-template #plain>{{ attr.value }}</ng-template>
+          </span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="block" *ngIf="ability.lore">
+      <h2>Lore</h2>
+      <p class="text text--lore">{{ ability.lore }}</p>
+    </section>
+  </ng-container>
+</section>

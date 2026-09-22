@@ -31,10 +31,15 @@
       </h2>
 
       <div class="items-grid">
-        <app-item-icon
+        <a
           *ngFor="let entry of group.items; trackBy: trackById"
-          [itemId]="entry.id"
-        />
+          class="icon-link"
+          [routerLink]="['/item']"
+          [queryParams]="{ id: entry.id }"
+          [attr.aria-label]="entry.item.dname ?? entry.id"
+        >
+          <app-item-icon [itemId]="entry.id" />
+        </a>
       </div>
     </section>
   </div>

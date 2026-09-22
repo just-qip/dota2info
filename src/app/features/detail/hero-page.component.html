@@ -1,0 +1,88 @@
+<section class="page">
+  <div *ngIf="loading()" class="state">Loading hero…</div>
+  <div *ngIf="error()" class="state state--error">{{ error() }}</div>
+
+  <ng-container *ngIf="hero() as hero">
+    <header class="head">
+      <img
+        class="head__icon"
+        [src]="toCdnUrl(hero.img)"
+        [alt]="hero.localized_name"
+        decoding="async"
+      />
+      <div class="head__title">
+        <h1>{{ hero.localized_name }}</h1>
+        <p class="head__subtitle">{{ subtitle }}</p>
+
+        <div class="roles" *ngIf="hero.roles.length">
+          <span
+            class="role-chip"
+            *ngFor="let role of hero.roles; trackBy: trackByRole"
+          >
+            {{ role }}
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <section class="block">
+      <h2>Stats</h2>
+      <div class="stat-grid">
+        <div
+          class="stat-row"
+          *ngFor="let s of stats; trackBy: trackByStat"
+        >
+          <span class="stat-row__icon">{{ s.icon }}</span>
+          <span class="stat-row__label">{{ s.label }}</span>
+          <span class="stat-row__value">
+            {{ s.value }}
+            <span *ngIf="s.suffix" class="stat-row__suffix">{{ s.suffix }}</span>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Attributes</h2>
+      <div class="attr-grid">
+        <div
+          class="attr-card attr-card--{{ a.key }}"
+          *ngFor="let a of heroAttrs; trackBy: trackByAttr"
+        >
+          <span class="attr-card__icon">{{ a.icon }}</span>
+          <div class="attr-card__body">
+            <div class="attr-card__label">{{ a.label }}</div>
+            <div class="attr-card__value">
+              {{ a.base }}
+              <span class="attr-card__gain">+{{ a.gain }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" *ngIf="abilities().length">
+      <h2>Abilities</h2>
+      <div class="abilities-grid">
+        <a
+          *ngFor="let entry of abilities(); trackBy: trackByAbility"
+          class="icon-link"
+          [routerLink]="['/ability']"
+          [queryParams]="{ id: entry.id }"
+          [attr.aria-label]="entry.ability.dname || entry.id"
+        >
+          <app-ability-icon
+            [abilityId]="entry.id"
+            [displayName]="entry.ability.dname || entry.id"
+            [imgPath]="entry.ability.img || ''"
+          />
+        </a>
+      </div>
+    </section>
+
+    <section class="block" *ngIf="lore()">
+      <h2>Biography</h2>
+      <p class="text text--lore">{{ lore() }}</p>
+    </section>
+  </ng-container>
+</section>

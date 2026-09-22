@@ -1,0 +1,207 @@
+:host {
+  display: block;
+}
+
+.page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  color: #ddd;
+}
+
+.state {
+  padding: 32px 8px;
+  color: #888;
+}
+
+.state--error {
+  color: #e57373;
+}
+
+/* ── Шапка ──────────────────────────────── */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #333;
+  margin-bottom: 24px;
+}
+
+.head__icon {
+  width: 128px;
+  height: 128px;
+  border-radius: 8px;
+  background: #222;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.head__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.head__title h1 {
+  margin: 0 0 4px;
+  font-size: 32px;
+  font-weight: 700;
+  color: #f0f0f0;
+  letter-spacing: 0.3px;
+}
+
+.head__subtitle {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #999;
+}
+
+.roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.role-chip {
+  font-size: 12px;
+  font-weight: 500;
+  color: #ddd;
+  background: #2c2c2c;
+  padding: 3px 10px;
+  border-radius: 11px;
+}
+
+/* ── Блоки ──────────────────────────────── */
+.block {
+  margin-bottom: 28px;
+}
+
+.block h2 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #f5c542;
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #2c2c2c;
+}
+
+/* ── Статы ──────────────────────────────── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px 24px;
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.stat-row__icon {
+  width: 22px;
+  text-align: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.stat-row__label {
+  color: #aaa;
+}
+
+.stat-row__value {
+  color: #f0f0f0;
+  font-weight: 600;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.stat-row__suffix {
+  color: #6cbf5a;
+  font-weight: 500;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+/* ── Атрибуты ───────────────────────────── */
+.attr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.attr-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: #202020;
+  border: 1px solid #2c2c2c;
+  border-radius: 6px;
+  border-left-width: 3px;
+}
+
+.attr-card--str { border-left-color: #d94e4e; }
+.attr-card--agi { border-left-color: #6cbf5a; }
+.attr-card--int { border-left-color: #4ea5d9; }
+
+.attr-card__icon {
+  font-size: 22px;
+}
+
+.attr-card__label {
+  color: #aaa;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.attr-card__value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f0f0f0;
+}
+
+.attr-card__gain {
+  font-size: 13px;
+  color: #6cbf5a;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* ── Способности ────────────────────────── */
+.abilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 12px;
+  --dota-icon-size: 88px;
+}
+
+.icon-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 4px;
+  outline-offset: 2px;
+}
+
+.icon-link:focus-visible {
+  outline: 2px solid #f5c542;
+}
+
+/* ── Текст ──────────────────────────────── */
+.text {
+  color: #bbb;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.text--lore {
+  color: #999;
+  font-style: italic;
+}

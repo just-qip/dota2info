@@ -1,12 +1,13 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { HeroIconComponent } from './hero-icon/hero-icon.component';
 import { DotaDataService, DotaHeroEntry, LetterGroup } from '../../core/services/dota-data.service';
 
 @Component({
   selector: 'app-heroes-page',
   standalone: true,
-  imports: [CommonModule, HeroIconComponent],
+  imports: [CommonModule, RouterLink, HeroIconComponent],
   templateUrl: './heroes-page.component.html',
   styleUrl: './heroes-page.component.css',
 })

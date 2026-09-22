@@ -31,12 +31,19 @@
       </h2>
 
       <div class="heroes-grid">
-        <app-hero-icon
+        <a
           *ngFor="let entry of group.items; trackBy: trackById"
-          [heroId]="entry.id"
-          [displayName]="entry.hero.localized_name"
-          [imgPath]="entry.hero.img"
-        />
+          class="icon-link"
+          [routerLink]="['/hero']"
+          [queryParams]="{ id: entry.id }"
+          [attr.aria-label]="entry.hero.localized_name"
+        >
+          <app-hero-icon
+            [heroId]="entry.id"
+            [displayName]="entry.hero.localized_name"
+            [imgPath]="entry.hero.img"
+          />
+        </a>
       </div>
     </section>
   </div>

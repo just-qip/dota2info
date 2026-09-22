@@ -1,0 +1,88 @@
+<section class="page">
+  <div *ngIf="loading()" class="state">Loading item…</div>
+  <div *ngIf="error()" class="state state--error">{{ error() }}</div>
+
+  <ng-container *ngIf="item() as item">
+    <header class="head">
+      <img
+        class="head__icon"
+        [src]="toCdnUrl(item.img)"
+        [alt]="item.dname"
+        decoding="async"
+      />
+      <div class="head__title">
+        <h1>{{ item.dname }}</h1>
+        <div class="head__meta">
+          <span *ngIf="item.qual" class="tag">{{ item.qual }}</span>
+          <span *ngIf="item.behavior" class="tag tag--soft">
+            {{ item.behavior }}
+          </span>
+        </div>
+      </div>
+      <div class="head__cost" *ngIf="item.cost">
+        <span class="coin">🪙</span>{{ item.cost }}
+      </div>
+    </header>
+
+    <section *ngIf="attributes().length" class="block">
+      <h2>Attributes</h2>
+      <ul class="attr-list">
+        <li *ngFor="let attr of attributes(); trackBy: trackByAttribute">
+          <span class="attr-list__name">{{ attr.label }}</span>
+          <span class="attr-list__value">
+            <ng-container *ngIf="attr.levels; else plain">
+              <span class="level-chain">
+                <ng-container *ngFor="let lvl of attr.levels; let last = last">
+                  <span class="chip">{{ lvl }}</span>
+                  <span *ngIf="!last" class="arrow">→</span>
+                </ng-container>
+              </span>
+            </ng-container>
+            <ng-template #plain>{{ attr.value }}</ng-template>
+          </span>
+        </li>
+      </ul>
+    </section>
+
+    <section *ngIf="item.abilities?.length" class="block">
+      <h2>Abilities</h2>
+      <article
+        class="ability"
+        *ngFor="let ab of item.abilities; trackBy: trackByAbility"
+      >
+        <h3>
+          <span class="ability__type">{{ ab.type }}</span>
+          {{ ab.title }}
+        </h3>
+        <div
+          class="ability__desc"
+          [innerHTML]="ab.description"
+        ></div>
+      </article>
+    </section>
+
+    <section *ngIf="item.notes" class="block">
+      <h2>Notes</h2>
+      <p class="text">{{ item.notes }}</p>
+    </section>
+
+    <section *ngIf="components().length" class="block">
+      <h2>Components</h2>
+      <div class="components">
+        <a
+          *ngFor="let id of components(); trackBy: trackByComponent"
+          class="icon-link"
+          [routerLink]="['/item']"
+          [queryParams]="{ id }"
+        >
+          <app-item-icon [itemId]="id" />
+        </a>
+      </div>
+    </section>
+
+    <section *ngIf="item.lore" class="block">
+      <h2>Lore</h2>
+      <p class="text text--lore">{{ item.lore }}</p>
+    </section>
+  </ng-container>
+</section>

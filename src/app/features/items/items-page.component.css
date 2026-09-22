@@ -99,3 +99,16 @@ h1 {
   grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
   gap: 8px;
 }
+
+/* ── Кликабельная обёртка иконки ────────── */
+.icon-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 4px;
+  outline-offset: 2px;
+}
+
+.icon-link:focus-visible {
+  outline: 2px solid #f5c542;
+}

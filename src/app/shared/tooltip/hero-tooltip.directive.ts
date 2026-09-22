@@ -1,33 +1,17 @@
-import { Directive, ElementRef, HostListener, Input, ComponentRef, inject } from '@angular/core';
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { ComponentPortal } from '@angular/cdk/portal';
-import { DotaAbility, DotaDataService, DotaHero } from '../../core/services/dota-data.service';
-import { DotaTooltipComponent } from './dota-tooltip.component';
-import { HeroTooltipAbility, TooltipStat, TooltipViewModel } from './dota-tooltip.types';
+import { Directive, HostListener, Input, inject } from '@angular/core';
 import { combineLatest } from 'rxjs';
-
-const CDN = 'https://cdn.cloudflare.steamstatic.com';
-
-const ATTR_LABELS: Record<string, string> = {
-  str: 'Strength',
-  agi: 'Agility',
-  int: 'Intelligence',
-  all: 'Universal',
-};
+import { DotaDataService } from '../../core/services/dota-data.service';
+import { OverlayTooltipBase } from './overlay-tooltip.base';
+import { mapHeroToViewModel } from './tooltip-mappers';
 
 @Directive({
   selector: '[appHeroTooltip]',
   standalone: true,
 })
-export class HeroTooltipDirective {
+export class HeroTooltipDirective extends OverlayTooltipBase {
   @Input('appHeroTooltip') heroId!: string;
 
-  private overlay = inject(Overlay);
-  private host = inject(ElementRef<HTMLElement>);
   private dataService = inject(DotaDataService);
-
-  private overlayRef: OverlayRef | null = null;
-  private componentRef: ComponentRef<DotaTooltipComponent> | null = null;
 
   @HostListener('mouseenter')
   show(): void {
@@ -39,28 +23,8 @@ export class HeroTooltipDirective {
       this.dataService.getHeroLore$(this.heroId),
     ]).subscribe(([hero, abilities, lore]) => {
       if (!hero) return;
-
-      const positionStrategy = this.overlay
-        .position()
-        .flexibleConnectedTo(this.host)
-        .withPositions([
-          { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top', offsetX: 8 },
-          { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top', offsetX: -8 },
-        ])
-        .withFlexibleDimensions(false)
-        .withViewportMargin(12)
-        .withPush(true);
-
-      this.overlayRef = this.overlay.create({
-        positionStrategy,
-        scrollStrategy: this.overlay.scrollStrategies.reposition(),
-      });
-
-      const portal = new ComponentPortal(DotaTooltipComponent);
-      this.componentRef = this.overlayRef.attach(portal);
-      this.componentRef.setInput(
-        'vm',
-        this.mapHeroToViewModel(
+      this.openTooltip(
+        mapHeroToViewModel(
           hero,
           abilities.map((e) => e.ability),
           lore,
@@ -70,102 +34,7 @@ export class HeroTooltipDirective {
   }
 
   @HostListener('mouseleave')
-  hide(): void {
-    this.overlayRef?.dispose();
-    this.overlayRef = null;
-    this.componentRef = null;
-  }
-
-  private mapHeroToViewModel(
-    hero: DotaHero,
-    abilities: DotaAbility[],
-    lore: string | null,
-  ): TooltipViewModel {
-    const attr = ATTR_LABELS[hero.primary_attr] ?? hero.primary_attr;
-
-    const stats: TooltipStat[] = [
-      {
-        icon: '❤',
-        label: 'Health',
-        value: hero.base_health ?? '—',
-        suffix: hero.base_health_regen !== undefined ? ` (+${hero.base_health_regen})` : '',
-      },
-      {
-        icon: '🔷',
-        label: 'Mana',
-        value: hero.base_mana ?? '—',
-        suffix: hero.base_mana_regen !== undefined ? ` (+${hero.base_mana_regen})` : '',
-      },
-      { icon: '🛡', label: 'Armor', value: hero.base_armor ?? '—' },
-      {
-        icon: '✨',
-        label: 'Magic Resist',
-        value: hero.base_mr !== undefined ? `${hero.base_mr}%` : '—',
-      },
-      {
-        icon: '⚔',
-        label: 'Attack',
-        value: `${hero.base_attack_min ?? '—'} – ${hero.base_attack_max ?? '—'}`,
-      },
-    ];
-
-    const heroAbilities: HeroTooltipAbility[] = abilities.map((ab, i) => ({
-      name: ab.dname ?? 'Unknown',
-      icon: this.toCdnUrl(ab.img),
-      cooldown: ab.cd,
-      manaCost: ab.mc,
-      description: this.stripHtml(ab.desc),
-      behavior: this.behaviorLabel(ab.behavior),
-      isUltimate: i === abilities.length - 1 && abilities.length >= 4,
-    }));
-
-    return {
-      name: hero.localized_name,
-      subtitle: `${attr} · ${hero.attack_type}`,
-      icon: this.toCdnUrl(hero.img),
-      attributes: [],
-      roles: hero.roles,
-      kind: 'hero',
-
-      stats,
-      heroAttrs: {
-        str: { base: hero.base_str ?? 0, gain: hero.str_gain ?? 0 },
-        agi: { base: hero.base_agi ?? 0, gain: hero.agi_gain ?? 0 },
-        int: { base: hero.base_int ?? 0, gain: hero.int_gain ?? 0 },
-      },
-      attackRange: hero.attack_range,
-      attackType: hero.attack_type,
-      moveSpeed: hero.move_speed,
-      turnRate: hero.turn_rate ?? null,
-      vision: {
-        day: hero.day_vision ?? 0,
-        night: hero.night_vision ?? 0,
-      },
-
-      heroAbilities,
-
-      heroLore: lore ?? undefined,
-    };
-  }
-
-  private behaviorLabel(behavior: DotaAbility['behavior']): string {
-    if (!behavior) return '';
-    if (Array.isArray(behavior)) return behavior.join(', ');
-    return behavior;
-  }
-
-  private stripHtml(html?: string): string {
-    if (!html) return '';
-    return html
-      .replace(/<br\s*\/?>/gi, ' ')
-      .replace(/<[^>]+>/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  private toCdnUrl(path?: string): string {
-    if (!path) return '';
-    const clean = path.replace(/\?+$/, '');
-    return clean.startsWith('http') ? clean : `${CDN}${clean}`;
+  hideOnLeave(): void {
+    this.hide();
   }
 }

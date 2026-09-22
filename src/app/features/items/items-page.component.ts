@@ -1,12 +1,13 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ItemIconComponent } from './item-icon/item-icon.component';
 import { DotaDataService, DotaItemEntry, LetterGroup } from '../../core/services/dota-data.service';
 
 @Component({
   selector: 'app-items-page',
   standalone: true,
-  imports: [CommonModule, ItemIconComponent],
+  imports: [CommonModule, RouterLink, ItemIconComponent],
   templateUrl: './items-page.component.html',
   styleUrl: './items-page.component.css',
 })

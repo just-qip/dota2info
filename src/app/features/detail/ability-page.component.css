@@ -1,0 +1,177 @@
+:host {
+  display: block;
+}
+
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  color: #ddd;
+}
+
+.state {
+  padding: 32px 8px;
+  color: #888;
+}
+
+.state--error {
+  color: #e57373;
+}
+
+/* ── Шапка ──────────────────────────────── */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #333;
+  margin-bottom: 24px;
+}
+
+.head__icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 6px;
+  background: #222;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.head__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.head__title h1 {
+  margin: 0 0 8px;
+  font-size: 26px;
+  font-weight: 600;
+  color: #f0f0f0;
+}
+
+.head__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  font-size: 12px;
+  font-weight: 600;
+  color: #f5c542;
+  background: rgba(245, 197, 66, 0.1);
+  border: 1px solid rgba(245, 197, 66, 0.35);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.tag--soft {
+  color: #8ecae6;
+  background: rgba(142, 202, 230, 0.08);
+  border-color: rgba(142, 202, 230, 0.3);
+}
+
+.tag--dmg {
+  color: #e57373;
+  background: rgba(229, 115, 115, 0.08);
+  border-color: rgba(229, 115, 115, 0.3);
+}
+
+/* ── Блоки ──────────────────────────────── */
+.block {
+  margin-bottom: 28px;
+}
+
+.block h2 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #f5c542;
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #2c2c2c;
+}
+
+/* ── Cast parameters ────────────────────── */
+.param-list,
+.attr-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.param-list li,
+.attr-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.param-list__icon {
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.param-list__label,
+.attr-list__name {
+  color: #aaa;
+}
+
+.param-list__value,
+.attr-list__value {
+  color: #8ecae6;
+  font-weight: 600;
+  margin-left: auto;
+}
+
+/* ── Level chips ────────────────────────── */
+.level-chain {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.chip {
+  display: inline-block;
+  background: #1f2b38;
+  color: #8ecae6;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 1px 7px;
+  border-radius: 3px;
+  border: 1px solid #2c3e50;
+  white-space: nowrap;
+}
+
+.arrow {
+  color: #5a6a80;
+  font-size: 12px;
+  user-select: none;
+}
+
+/* ── Описание и текст ───────────────────── */
+.desc {
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.text {
+  color: #bbb;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-line;
+}
+
+.text--lore {
+  color: #888;
+  font-style: italic;
+}

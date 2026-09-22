@@ -31,12 +31,19 @@
       </h2>
 
       <div class="abilities-grid">
-        <app-ability-icon
+        <a
           *ngFor="let entry of group.items; trackBy: trackById"
-          [abilityId]="entry.id"
-          [displayName]="entry.ability.dname || entry.id"
-          [imgPath]="entry.ability.img || ''"
-        />
+          class="icon-link"
+          [routerLink]="['/ability']"
+          [queryParams]="{ id: entry.id }"
+          [attr.aria-label]="entry.ability.dname || entry.id"
+        >
+          <app-ability-icon
+            [abilityId]="entry.id"
+            [displayName]="entry.ability.dname || entry.id"
+            [imgPath]="entry.ability.img || ''"
+          />
+        </a>
       </div>
     </section>
   </div>
