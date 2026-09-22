@@ -4,19 +4,16 @@ const STORAGE_KEY = 'dota2info.brokenIcons.v1';
 
 @Injectable({ providedIn: 'root' })
 export class BrokenIconsService {
-  /** Реактивный набор битых URL */
   private readonly broken = signal<Set<string>>(new Set());
 
   constructor() {
     this.load();
   }
 
-  /** Проверка, сломан ли URL */
   isBroken(url: string): boolean {
     return this.broken().has(url);
   }
 
-  /** Отметить URL как сломанный */
   markBroken(url: string): void {
     if (!url || this.broken().has(url)) return;
     const next = new Set(this.broken());
@@ -25,7 +22,6 @@ export class BrokenIconsService {
     this.save(next);
   }
 
-  /** Сброс кэша (например, при смене патча) */
   reset(): void {
     this.broken.set(new Set());
     try {

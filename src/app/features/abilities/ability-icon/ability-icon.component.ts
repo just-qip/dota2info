@@ -1,5 +1,6 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
 import { AbilityTooltipDirective } from '../../../shared/tooltip';
+import { BrokenIconsService } from '../../../core/services/broken-icons.service';
 
 const CDN = 'https://cdn.cloudflare.steamstatic.com';
 
@@ -86,18 +87,19 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AbilityIconComponent {
+export class AbilityIconComponent implements OnInit {
   @Input({ required: true }) abilityId!: string;
   @Input() displayName = '';
   @Input() imgPath = '';
 
+  private broken = inject(BrokenIconsService);
+
   showImage = true;
 
   get iconUrl(): string {
-    const source = this.imgPath
-      ? this.imgPath.replace(/\?+$/, '')
-      : `/apps/dota2/images/dota_react/abilities/${this.abilityId}.png`;
-    return source.startsWith('http') ? source : `${CDN}${source}`;
+    // Всегда строим URL по abilityId — тогда кэш совпадает по строке
+    // с тем, что реально уходит в сеть.
+    return `${CDN}/apps/dota2/images/dota_react/abilities/${this.abilityId}.png`;
   }
 
   get placeholderLetter(): string {
@@ -105,7 +107,14 @@ export class AbilityIconComponent {
     return name.charAt(0).toUpperCase();
   }
 
+  ngOnInit(): void {
+    if (this.broken.isBroken(this.iconUrl)) {
+      this.showImage = false;
+    }
+  }
+
   onImgError(): void {
     this.showImage = false;
+    this.broken.markBroken(this.iconUrl);
   }
 }
