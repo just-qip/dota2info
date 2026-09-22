@@ -161,6 +161,7 @@ export class DotaDataService {
   private heroes$?: Observable<Record<string, DotaHero>>;
   private abilities$?: Observable<Record<string, DotaAbility>>;
   private heroAbilities$?: Observable<Record<string, HeroAbilitySet>>;
+  private heroLore$?: Observable<Record<string, string>>;
 
   private itemCache = new Map<string, DotaItem>();
   private heroCache = new Map<string, DotaHero>();
@@ -209,12 +210,52 @@ export class DotaDataService {
     return this.heroes$;
   }
 
+  private loadHeroLore(): Observable<Record<string, string>> {
+    if (!this.heroLore$) {
+      this.heroLore$ = this.http
+        .get<Record<string, string>>(`${this.base}/hero_lore.json`)
+        .pipe(shareReplay(1));
+    }
+    return this.heroLore$;
+  }
+
   getHero(heroId: string): DotaHero | null {
     return this.heroCache.get(heroId) ?? null;
   }
 
   getHero$(heroId: string): Observable<DotaHero | null> {
     return this.loadHeroes().pipe(map((heroes) => this.findHeroByAnyId(heroes, heroId) ?? null));
+  }
+
+  /**
+   * Лор героя.
+   *
+   * В dotaconstants `hero_lore.json` использует слаги (antimage, axe, ...),
+   * а `heroes.json` — числовые ключи ("1", "2"). Мостим через внутреннее имя:
+   * npc_dota_hero_antimage -> antimage -> лор.
+   *
+   * На случай, если структура поменяется, пробуем несколько вариантов.
+   */
+  getHeroLore$(heroId: string): Observable<string | null> {
+    return combineLatest([this.loadHeroes(), this.loadHeroLore()]).pipe(
+      map(([heroes, lore]) => {
+        const hero = this.findHeroByAnyId(heroes, heroId);
+        if (!hero?.name) return null;
+
+        const slug = hero.name.replace(/^npc_dota_hero_/, '');
+        const lowerId = heroId.toLowerCase();
+        const lnameUnderscored = hero.localized_name?.toLowerCase().replace(/[\s-]+/g, '_');
+
+        // Пробуем несколько вариантов ключа
+        return (
+          lore[slug] ??
+          lore[lowerId] ??
+          lore[hero.name] ??
+          (lnameUnderscored ? lore[lnameUnderscored] : undefined) ??
+          null
+        );
+      }),
+    );
   }
 
   getAllHeroes$(): Observable<DotaHeroEntry[]> {
@@ -268,18 +309,13 @@ export class DotaDataService {
     );
   }
 
-  /**
-   * Способности героя.
-   * heroId может быть числовым ключом "1", слагом "antimage" или локализованным "Anti-Mage".
-   */
   getHeroAbilities$(heroId: string): Observable<DotaAbilityEntry[]> {
     return combineLatest([this.loadHeroes(), this.loadHeroAbilities(), this.loadAbilities()]).pipe(
       map(([heroes, heroAbilities, abilities]) => {
         const hero = this.findHeroByAnyId(heroes, heroId);
         if (!hero) return [];
 
-        const heroName = hero.name;
-        const keys = heroAbilities[heroName]?.abilities ?? [];
+        const keys = heroAbilities[hero.name]?.abilities ?? [];
 
         return keys.map((id) => ({ id, ability: abilities[id] })).filter((e) => !!e.ability?.dname);
       }),
@@ -358,13 +394,6 @@ export class DotaDataService {
     return true;
   }
 
-  /**
-   * Ищет героя по любому из возможных идентификаторов:
-   *   1. Числовой ключ из heroes.json ("1", "2")
-   *   2. Внутренний слаг: "npc_dota_hero_antimage" → "antimage"
-   *   3. Локализованное имя без разделителей: "Anti-Mage" → "antimage"
-   *   4. Локализованное имя с подчёркиваниями: "Anti-Mage" → "anti_mage"
-   */
   private findHeroByAnyId(heroes: Record<string, DotaHero>, id: string): DotaHero | undefined {
     if (heroes[id]) return heroes[id];
 

@@ -24,7 +24,7 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
     `
       :host {
         display: block;
-        width: 64px;
+        width: var(--dota-icon-size, 88px);
       }
       .hero-cell {
         display: flex;
@@ -46,7 +46,7 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
         transform: scale(1.05);
       }
       .hero-name {
-        font-size: 11px;
+        font-size: 12px;
         color: #bbb;
         text-align: center;
         line-height: 1.2;
@@ -65,12 +65,16 @@ export class HeroIconComponent {
   @Input() imgPath = '';
 
   get iconUrl(): string {
+    // 1. Если есть готовый путь из dotaconstants — используем его
     if (this.imgPath) {
       const clean = this.imgPath.replace(/\?+$/, '');
       return clean.startsWith('http') ? clean : `${CDN}${clean}`;
     }
-    // Маленькая квадратная иконка героя (а не большой вертикальный портрет)
-    return `${CDN}/apps/dota2/images/dota_react/heroes/icons/${this.heroId}.png`;
+
+    // 2. Иначе строим портрет героя по heroId — точно такой же,
+    //    какой приходит в heroes.json → hero.img.
+    //    Это тот же файл, что использует главная страница.
+    return `${CDN}/apps/dota2/images/dota_react/heroes/${this.heroId}.png`;
   }
 
   onImgError(event: Event): void {

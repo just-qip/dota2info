@@ -32,7 +32,7 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
     `
       :host {
         display: block;
-        width: 64px;
+        width: var(--dota-icon-size, 88px);
       }
       .ability-cell {
         display: flex;
@@ -42,8 +42,8 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
         cursor: pointer;
       }
       .ability-icon-wrap {
-        width: 64px;
-        height: 64px;
+        width: 100%;
+        aspect-ratio: 1 / 1;
         border-radius: 4px;
         background: #2a2a2a;
         overflow: hidden;
@@ -71,7 +71,7 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
         user-select: none;
       }
       .ability-name {
-        font-size: 11px;
+        font-size: 12px;
         color: #bbb;
         text-align: center;
         line-height: 1.2;

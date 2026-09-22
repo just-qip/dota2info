@@ -30,13 +30,16 @@ export class DotaTooltipComponent {
     if (img.src) this.broken.markBroken(img.src);
   }
 
-  /** Не рендерить картинку, если URL уже был битым */
   canShowIcon(url: string | undefined): boolean {
     if (!url) return false;
     return !this.broken.isBroken(url);
   }
 
-  /** При ошибке загрузки — запомнить и показать плейсхолдер */
+  isIconFailed(url: string | undefined): boolean {
+    if (!url) return true;
+    return this.broken.isBroken(url);
+  }
+
   onIconError(url: string): void {
     this.broken.markBroken(url);
   }

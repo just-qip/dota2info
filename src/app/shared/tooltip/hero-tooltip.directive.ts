@@ -4,6 +4,7 @@ import { ComponentPortal } from '@angular/cdk/portal';
 import { DotaAbility, DotaDataService, DotaHero } from '../../core/services/dota-data.service';
 import { DotaTooltipComponent } from './dota-tooltip.component';
 import { HeroTooltipAbility, TooltipStat, TooltipViewModel } from './dota-tooltip.types';
+import { combineLatest } from 'rxjs';
 
 const CDN = 'https://cdn.cloudflare.steamstatic.com';
 
@@ -32,36 +33,39 @@ export class HeroTooltipDirective {
   show(): void {
     if (!this.heroId || this.overlayRef) return;
 
-    this.dataService.getHero$(this.heroId).subscribe((hero) => {
+    combineLatest([
+      this.dataService.getHero$(this.heroId),
+      this.dataService.getHeroAbilities$(this.heroId),
+      this.dataService.getHeroLore$(this.heroId),
+    ]).subscribe(([hero, abilities, lore]) => {
       if (!hero) return;
 
-      this.dataService.getHeroAbilities$(this.heroId).subscribe((abilities) => {
-        const positionStrategy = this.overlay
-          .position()
-          .flexibleConnectedTo(this.host)
-          .withPositions([
-            { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top', offsetX: 8 },
-            { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top', offsetX: -8 },
-          ])
-          .withFlexibleDimensions(false)
-          .withViewportMargin(12)
-          .withPush(true);
+      const positionStrategy = this.overlay
+        .position()
+        .flexibleConnectedTo(this.host)
+        .withPositions([
+          { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top', offsetX: 8 },
+          { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top', offsetX: -8 },
+        ])
+        .withFlexibleDimensions(false)
+        .withViewportMargin(12)
+        .withPush(true);
 
-        this.overlayRef = this.overlay.create({
-          positionStrategy,
-          scrollStrategy: this.overlay.scrollStrategies.reposition(),
-        });
-
-        const portal = new ComponentPortal(DotaTooltipComponent);
-        this.componentRef = this.overlayRef.attach(portal);
-        this.componentRef.setInput(
-          'vm',
-          this.mapHeroToViewModel(
-            hero,
-            abilities.map((e) => e.ability),
-          ),
-        );
+      this.overlayRef = this.overlay.create({
+        positionStrategy,
+        scrollStrategy: this.overlay.scrollStrategies.reposition(),
       });
+
+      const portal = new ComponentPortal(DotaTooltipComponent);
+      this.componentRef = this.overlayRef.attach(portal);
+      this.componentRef.setInput(
+        'vm',
+        this.mapHeroToViewModel(
+          hero,
+          abilities.map((e) => e.ability),
+          lore,
+        ),
+      );
     });
   }
 
@@ -72,7 +76,11 @@ export class HeroTooltipDirective {
     this.componentRef = null;
   }
 
-  private mapHeroToViewModel(hero: DotaHero, abilities: DotaAbility[]): TooltipViewModel {
+  private mapHeroToViewModel(
+    hero: DotaHero,
+    abilities: DotaAbility[],
+    lore: string | null,
+  ): TooltipViewModel {
     const attr = ATTR_LABELS[hero.primary_attr] ?? hero.primary_attr;
 
     const stats: TooltipStat[] = [
@@ -135,6 +143,8 @@ export class HeroTooltipDirective {
       },
 
       heroAbilities,
+
+      heroLore: lore ?? undefined,
     };
   }
 

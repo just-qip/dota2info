@@ -2,7 +2,7 @@ export interface TooltipAttribute {
   label: string;
   value: string | number;
   color?: string;
-  /** Если есть — рендерим значения по уровням со стрелками */
+  /** Если есть — рендерим значения по уровням со стрелочками */
   levels?: string[];
 }
 
@@ -55,6 +55,9 @@ export interface TooltipViewModel {
 
   heroAbilities?: HeroTooltipAbility[];
 
+  /** Биография / история героя */
+  heroLore?: string;
+
   abilityDescription?: string;
   abilityBehavior?: string;
   abilityDamageType?: string;
@@ -63,7 +66,6 @@ export interface TooltipViewModel {
   abilityTarget?: string;
   abilityNotes?: string;
 
-  /** Уровневые значения маны и кулдауна (если есть) */
   abilityManaCostLevels?: string[];
   abilityCooldownLevels?: string[];
 }

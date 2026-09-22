@@ -22,8 +22,8 @@ const CDN = 'https://cdn.cloudflare.steamstatic.com';
     `
       :host {
         display: block;
-        width: 64px;
-        height: 64px;
+        width: var(--dota-icon-size, 72px);
+        height: var(--dota-icon-size, 72px);
       }
       .item-icon {
         width: 100%;

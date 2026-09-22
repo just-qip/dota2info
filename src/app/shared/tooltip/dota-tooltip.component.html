@@ -2,7 +2,7 @@
   <header class="tooltip-header">
     <div class="item-icon-name">
       <img
-        *ngIf="canShowIcon(vm.icon)"
+        *ngIf="vm.icon"
         [src]="vm.icon"
         [alt]="vm.name"
         class="item-icon"
@@ -158,7 +158,7 @@
     <section class="tooltip-abilities-row">
       <div class="ability-row-item" *ngFor="let ab of vm.heroAbilities">
         <img
-          *ngIf="canShowIcon(ab.icon)"
+          *ngIf="ab.icon && !isIconFailed(ab.icon)"
           [src]="ab.icon"
           [alt]="ab.name"
           [title]="ab.name"
@@ -166,13 +166,22 @@
           (error)="onIconError(ab.icon)"
         />
         <div
-          *ngIf="!canShowIcon(ab.icon)"
+          *ngIf="!ab.icon || isIconFailed(ab.icon)"
           class="ability-row-icon ability-row-placeholder"
           [title]="ab.name"
         >
           {{ ab.name.charAt(0) }}
         </div>
       </div>
+    </section>
+  </ng-container>
+
+  <!-- ── Биография героя ── -->
+  <ng-container *ngIf="vm.kind === 'hero' && vm.heroLore">
+    <hr class="divider" />
+    <section class="tooltip-hero-lore">
+      <div class="lore-title">Biography</div>
+      <div class="lore-text">{{ vm.heroLore }}</div>
     </section>
   </ng-container>
 
@@ -208,8 +217,8 @@
     </section>
   </ng-container>
 
-  <!-- ── Лор ── -->
-  <ng-container *ngIf="vm.lore">
+  <!-- ── Лор предмета ── -->
+  <ng-container *ngIf="vm.kind === 'item' && vm.lore">
     <hr class="divider" />
     <footer class="tooltip-lore">{{ vm.lore }}</footer>
   </ng-container>
