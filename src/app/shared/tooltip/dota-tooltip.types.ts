@@ -59,6 +59,7 @@ export interface TooltipViewModel {
   heroLore?: string;
 
   abilityDescription?: string;
+  abilityLore?: string;
   abilityBehavior?: string;
   abilityDamageType?: string;
   abilityManaCost?: number | false | string;

@@ -80,6 +80,12 @@
     </section>
   </ng-container>
 
+  <!-- ── Лор способности ── -->
+  <ng-container *ngIf="vm.kind === 'ability' && vm.abilityLore">
+    <hr class="divider" />
+    <footer class="tooltip-lore">{{ vm.abilityLore }}</footer>
+  </ng-container>
+
   <!-- ── Роли ── -->
   <ng-container *ngIf="vm.roles && vm.roles.length">
     <hr class="divider" />

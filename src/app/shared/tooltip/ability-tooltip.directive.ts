@@ -78,6 +78,7 @@ export class AbilityTooltipDirective {
       kind: 'ability',
 
       abilityDescription: ability.desc ?? '',
+      abilityLore: ability.lore ?? '',
       abilityBehavior: this.behaviorLabel(ability.behavior),
       abilityDamageType: ability.dmg_type ?? '',
       abilityManaCost: ability.mc,

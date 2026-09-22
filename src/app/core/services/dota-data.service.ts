@@ -104,6 +104,7 @@ export interface DotaAbilityAttrib {
 export interface DotaAbility {
   dname?: string;
   desc?: string;
+  lore?: string;
   behavior?: string | string[];
   dmg_type?: string;
   bkbpierce?: string;
