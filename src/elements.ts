@@ -133,23 +133,25 @@ async function embedWidget(
 ): Promise<void> {
   const displayName = await resolveDisplayName(info, data);
 
-  // Пока мы ждали данные, DOM мог перестроиться.
+  // Пока ждали данные, DOM мог перестроиться.
   if (!anchor.isConnected) return;
 
   const widget = document.createElement(info.tag);
   widget.setAttribute(info.idAttr, info.id);
   if (displayName) widget.setAttribute('display-name', displayName);
-
-  // Сохраняем title, если он был задан автором ссылки.
   if (anchor.title) widget.setAttribute('title', anchor.title);
 
-  anchor.replaceWith(widget);
+  // Очищаем содержимое <a>, но саму ссылку сохраняем:
+  // клик по виджету всплывёт до <a> и сработает как обычный переход.
+  anchor.textContent = '';
+  anchor.appendChild(widget);
+  anchor.setAttribute('data-dota-embedded', '1');
 
   // Уведомляем страницу-хост — удобно для тестовых логов.
   try {
     window.dispatchEvent(
       new CustomEvent('dota-widget-embedded', {
-        detail: { kind: info.kind, id: info.id, displayName },
+        detail: { kind: info.kind, id: info.id, displayName, href: anchor.href },
       }),
     );
   } catch {
